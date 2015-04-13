@@ -1,4 +1,4 @@
-# Copyright 2014 Alcatel-Lucent USA Inc.
+# Copyright 2015 Alcatel-Lucent USA Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -25,8 +25,6 @@ class NetPartition(extension.NeutronClientExtension):
 class NetPartitionList(extension.ClientExtensionList, NetPartition):
     shell_command = 'nuage-netpartition-list'
     list_columns = ['id', 'name']
-    pagination_support = True
-    sorting_support = True
 
 class NetPartitionCreate(extension.ClientExtensionCreate, NetPartition):
     shell_command = 'nuage-netpartition-create'
