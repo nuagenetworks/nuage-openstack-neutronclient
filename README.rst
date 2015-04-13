@@ -11,10 +11,9 @@ nuage-openstack-neutronclient
 
 How to use
 ----------
-To add a feature
-1. Create a class for your feature in nuage folder
-2. Import neutronclient.extension module from python-neutronclient
-3. Create a base class for your resource and inherit extension.NeutronClientExtension class
-4. Create classes for your cli's and inherit from extension.ClientExtension<command name>, 
-   resource base class
-5. Add a entrypoint in setup.cfg as "resourcename = nuage.<resourceclassname>"
+To add a feature cli
+* Create a class for your feature in nuage folder
+* Import neutronclient.extension module from python-neutronclient
+* Create a base class for your resource and inherit extension.NeutronClientExtension class
+* Create classes for your cli's by inheriting from extension.ClientExtension<command name>, base class
+* Add a entrypoint in setup.cfg as "resourcename = nuage.<resourceclassname>"
