@@ -497,7 +497,6 @@ class AssignGatewayPortVlan(extension.ClientExtensionUpdate,
             'tenant': parsed_args.tenant_id,
             'action': 'assign'}}
 
-        import pdb;pdb.set_trace()
         match = re.match(UUID_PATTERN, str(res_id))
         if match:
             neutron_client.update_nuage_gateway_vlan(res_id, body)
