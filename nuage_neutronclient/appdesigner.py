@@ -224,7 +224,7 @@ class Tier(extension.NeutronClientExtension):
     versions = ['2.0']
 
 
-class TierList(extension.ClientExtensionCreate, Tier):
+class TierList(extension.ClientExtensionList, Tier):
 
     shell_command = 'nuage-tier-list'
     list_columns = ['id', 'name', 'type', 'associatedappid']
@@ -381,7 +381,7 @@ class AppdportList(extension.ClientExtensionList, Appdport):
 class AppdportShow(extension.ClientExtensionShow, Appdport):
 
     shell_command = 'nuage-appdport-show'
-    resource = 'port'
+    resource = 'appdport'
 
 
 class AppdportCreate(extension.ClientExtensionCreate, Appdport):
@@ -412,15 +412,8 @@ class AppdportCreate(extension.ClientExtensionCreate, Appdport):
 
 
 class AppdportDelete(extension.ClientExtensionDelete, Appdport):
-
     shell_command = 'nuage-appdport-delete'
-    resource = 'port'
-
-
-class AppdportUpdate(extension.ClientExtensionUpdate, Appdport):
-
-    shell_command = 'nuage-appdport-update'
-    resource = 'port'
+    resource = 'appdport'
 
 
 class Service(extension.NeutronClientExtension):
