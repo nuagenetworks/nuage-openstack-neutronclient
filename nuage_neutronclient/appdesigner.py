@@ -357,7 +357,6 @@ class TierUpdate(extension.ClientExtensionUpdate, Tier):
         return body
 
 
-
 class Appdport(extension.NeutronClientExtension):
 
     resource = 'appdport'
@@ -550,7 +549,7 @@ def service_updatable_args2body(parsed_args, body):
         body['service'].update({'description': parsed_args.description})
 
 
-class ServiceUpdate(extension.ClientExtensionDelete, Service):
+class ServiceUpdate(extension.ClientExtensionUpdate, Service):
 
     shell_command = 'nuage-service-update'
 
@@ -572,7 +571,7 @@ class Flow(extension.NeutronClientExtension):
     versions = ['2.0']
 
 
-class FlowList(extension.ClientExtensionDelete, Flow):
+class FlowList(extension.ClientExtensionList, Flow):
 
     shell_command = 'nuage-flow-list'
     list_columns = ['id', 'name', 'origin_tier',
@@ -599,7 +598,7 @@ class FlowList(extension.ClientExtensionDelete, Flow):
 
 class FlowShow(extension.ClientExtensionShow, Flow):
 
-    shell_command = 'nuage-flow-list'
+    shell_command = 'nuage-flow-show'
     allow_names = False
 
 
