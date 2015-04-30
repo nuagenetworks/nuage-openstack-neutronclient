@@ -1,0 +1,12 @@
+Source: nuage-openstack-neutronclient
+Maintainer: infra-nuage <infra-nuage@list.alcatel-lucent.com>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools, python-all, debhelper (>= 7)
+Standards-Version: 3.9.3
+Homepage: http://nuagenetworks.net/
+
+Package: nuage-openstack-neutronclient
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: Nuage's spin of Openstack Neutron Client
