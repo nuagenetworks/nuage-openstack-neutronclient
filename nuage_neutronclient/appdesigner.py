@@ -486,8 +486,7 @@ class ServiceCreate(extension.ClientExtensionCreate, Service):
             help='DSCP value to match.'),
         parser.add_argument(
             '--direction',
-            choices=['REFLEXIVE', 'UNIDIRECTIONAL',
-                     'BIDIRECTIONAL'],
+            choices=['REFLEXIVE', 'UNIDIRECTIONAL'],
             help='Direction to be applied.'),
         parser.add_argument(
             '--description',
