@@ -460,7 +460,9 @@ class ServiceCreate(extension.ClientExtensionCreate, Service):
                 or parsed_args.protocol == '6') or
             (parsed_args.protocol == 'UDP' or parsed_args.protocol == 'udp'
                 or parsed_args.protocol == '17')) \
-                and not (parsed_args.src_port or parsed_args.dest_port):
+                and (not (parsed_args.src_port or parsed_args.dest_port) or
+                         (parsed_args.src_port == 'N/A' or
+                                  parsed_args.dest_port == 'N/A')):
             raise exceptions.CommandError(_("Source port and "
                                             "destination port"
                                             " are mandatory parameters"
