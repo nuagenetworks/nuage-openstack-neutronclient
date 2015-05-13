@@ -42,15 +42,16 @@ UUID_PATTERN = '-'.join([HEX_ELEM + '{8}', HEX_ELEM + '{4}',
 def check_vlan_value(value):
     try:
         vlan_val = int(value)
-        return vlan_val
     except ValueError:
         message = (_('Vlan value should be a valid integer '
-                     'in 0-4095 range'))
+                     'in 0-4094 range'))
         raise exceptions.CommandError(message=message)
-    else:
-        if vlan_val < 0 or vlan_val > 4095:
-            message = (_('Vlan value should be in 0-4095 range'))
-            raise exceptions.CommandError(message=message)
+
+    if vlan_val not in range(0, 4095):
+        message = (_('Vlan value should be in 0-4094 range'))
+        raise exceptions.CommandError(message=message)
+
+    return vlan_val
 
 
 def get_gatway_info(parsed_args, neutron_client):
@@ -376,7 +377,7 @@ class CreateGatewayPortVlan(extension.ClientExtensionCreate,
     def add_known_arguments(self, parser):
         parser.add_argument(
             'id', metavar='VLAN_VALUE', type=check_vlan_value,
-            help=_('Vlan value in 0-4095 range'))
+            help=_('Vlan value in 0-4094 range'))
         parser.add_argument(
             '--gateway', metavar='GATEWAY',
             help=_('Name or ID of the gateway'))
