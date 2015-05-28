@@ -326,7 +326,7 @@ class CreateRedirectTargetRule(extension.ClientExtensionCreate,
 
     def add_known_arguments(self, parser):
         parser.add_argument(
-            'redirect-target-id', metavar='REDIRECT_TARGET',
+            'redirect_target_id', metavar='REDIRECT_TARGET',
             help=_('Redirect Target ID to apply rule'))
         parser.add_argument(
             '--protocol',
