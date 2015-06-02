@@ -57,7 +57,7 @@ def validate_port_range(port_min, port_max, proto):
         message = _("Invalid value for port_min, port_max.")
         raise exceptions.NeutronClientException(message=message)
 
-    if proto.lower() in [const.PROTO_NAME_TCP]:
+    if proto.lower() in [const.PROTO_NAME_TCP, const.PROTO_NAME_UDP]:
         if (port_min is not None and port_min <= port_max):
             pass
         else:
