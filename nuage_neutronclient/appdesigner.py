@@ -14,11 +14,19 @@
 #
 
 import logging
+import re
+import six
 
 from oslo.serialization import jsonutils
 from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.i18n import _
+from neutronclient.neutron import v2_0 as neutronV20
+
+HEX_ELEM = '[0-9A-Fa-f]'
+UUID_PATTERN = '-'.join([HEX_ELEM + '{8}', HEX_ELEM + '{4}',
+                         HEX_ELEM + '{4}', HEX_ELEM + '{4}',
+                         HEX_ELEM + '{12}'])
 
 
 def _format_fixed_ips(appdport):
@@ -382,6 +390,34 @@ class AppdportShow(extension.ClientExtensionShow, Appdport):
     shell_command = 'nuage-appdport-show'
     resource = 'appdport'
 
+    def execute(self, parsed_args):
+        neutron_client = self.get_client()
+        neutron_client.format = parsed_args.request_format
+        params = {}
+        res_id = neutronV20.find_resourceid_by_name_or_id(
+            neutron_client, 'port', parsed_args.id)
+        obj_shower = getattr(neutron_client, "show_%s" % 'appdport')
+        data = obj_shower(res_id, **params)
+        self.format_output_data(data)
+        resp_dict = data[self.resource]
+        if self.resource in data:
+            for k, v in six.iteritems(resp_dict):
+                if isinstance(v, list):
+                    value = ""
+                    for _item in v:
+                        if value:
+                            value += "\n"
+                        if isinstance(_item, dict):
+                            value += jsonutils.dumps(_item)
+                        else:
+                            value += str(_item)
+                    resp_dict[k] = value
+                elif v is None:
+                    resp_dict[k] = ''
+            return zip(*sorted(six.iteritems(resp_dict)))
+        else:
+            return None
+
 
 class AppdportCreate(extension.ClientExtensionCreate, Appdport):
 
@@ -404,15 +440,35 @@ class AppdportCreate(extension.ClientExtensionCreate, Appdport):
             raise exceptions.CommandError(_("Tier-Id is a mandatory"
                                             " parameter to create a"
                                             " App. Designer port on a tier."
-                                            "Usage: neutron"
+                                            " Usage: neutron"
                                             " nuage-appdport-create"
                                             " --tier-id <tier-id>"))
         return body
 
 
 class AppdportDelete(extension.ClientExtensionDelete, Appdport):
+
     shell_command = 'nuage-appdport-delete'
     resource = 'appdport'
+
+    def run(self, parsed_args):
+        neutron_client = self.get_client()
+        neutron_client.format = parsed_args.request_format
+        res_id = neutronV20.find_resourceid_by_name_or_id(neutron_client,
+                                                          'port',
+                                                          parsed_args.id)
+        obj_deleter = getattr(neutron_client, "delete_%s" % 'appdport')
+        match = re.match(UUID_PATTERN, str(res_id))
+        if match:
+            obj_deleter(res_id)
+            print((_('Deleted %(resource)s: %(res_id)s')
+                   % {'res_id': parsed_args.id,
+                      'resource': self.resource}))
+        else:
+            obj_deleter(parsed_args.id)
+            print((_('Deleted %(resource)s: %(res_id)s')
+                   % {'res_id': res_id,
+                      'resource': self.resource}))
 
 
 def add_appdport_updatable_arguments(parser):
