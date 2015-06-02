@@ -415,6 +415,35 @@ class AppdportDelete(extension.ClientExtensionDelete, Appdport):
     resource = 'appdport'
 
 
+def add_appdport_updatable_arguments(parser):
+    parser.add_argument(
+        '--name',
+        help=_('Name of the application designer port.'))
+    parser.add_argument(
+        '--description',
+        help=_('Description of the application designer port.'))
+
+
+def appdport_updatable_args2body(parsed_args, body):
+    if parsed_args.name:
+        body['appdport'].update({'name': parsed_args.name})
+    if parsed_args.description:
+        body['appdport'].update({'description': parsed_args.description})
+
+
+class AppdportUpdate(extension.ClientExtensionUpdate, Appdport):
+
+    shell_command = 'nuage-appdport-update'
+
+    def add_known_arguments(self, parser):
+        add_appdport_updatable_arguments(parser)
+
+    def args2body(self, parsed_args):
+        body = {'appdport': {}}
+        appdport_updatable_args2body(parsed_args, body)
+        return body
+
+
 class Service(extension.NeutronClientExtension):
     resource = 'service'
     resource_plural = '%ss' % resource
