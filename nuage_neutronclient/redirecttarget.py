@@ -199,13 +199,12 @@ class ListRedirectTargetRule(extension.ClientExtensionList,
 
     shell_command = 'nuage-redirect-target-rule-list'
     list_columns = ['id', 'action', 'protocol', 'priority', 'origin_group_id',
-                    'port_range_max', 'remote_ip_prefix', 'remote_group_id',
-                    'redirect_target_id']
+                    'port_range_min', 'port_range_max', 'remote_ip_prefix',
+                    'remote_group_id', 'redirect_target_id']
     #replace_rules: key is an attribute name in Neutron API and
     #corresponding value is a display name shown by CLI.
     replace_rules = {'origin_group_id': 'origin_security_group',
-                     'remote_group_id': 'remote_group',
-                     'port_range_max': 'destination_port'}
+                     'remote_group_id': 'remote_group'}
 
     def get_parser(self, prog_name):
         parser = super(ListRedirectTargetRule, self).get_parser(prog_name)
