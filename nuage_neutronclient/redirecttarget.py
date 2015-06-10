@@ -98,16 +98,15 @@ class CreateRedirectTarget(extension.ClientExtensionCreate, RedirectTarget):
             '--description', metavar='description',
             help='Description of redirect target.')
         parser.add_argument(
-            '--virtual-ip-address',
-            dest='virtual_ip_address', metavar='virtual_ip_address',
-            help='Virtual IP Address.')
-        parser.add_argument(
             '--redundancy-enabled',
             dest='redundancy_enabled', metavar='redundancy_enabled',
             help='Enable/Disable redundance on redirect target.')
         parser.add_argument(
             '--subnet', metavar='SUBNET',
             help='Subnet name or ID to add redirection target.')
+        parser.add_argument(
+            '--router', metavar='ROUTER',
+            help='Router name or ID to add redirection target.')
 
     def args2body(self, parsed_args):
         body = {'nuage_redirect_target': {
@@ -115,15 +114,12 @@ class CreateRedirectTarget(extension.ClientExtensionCreate, RedirectTarget):
         if not parsed_args.insertion_mode:
             message = (_('--insertion_mode should be specified'))
             raise exceptions.NeutronClientException(message=message)
-        if not parsed_args.subnet:
-            message = (_('--subnet should be specified'))
+        if not parsed_args.subnet and not parsed_args.router:
+            message = (_('--subnet or --router should be specified'))
             raise exceptions.NeutronClientException(message=message)
         if parsed_args.description:
             body['nuage_redirect_target'].update(
                 {'description': parsed_args.description})
-        if parsed_args.virtual_ip_address:
-            body['nuage_redirect_target'].update(
-                {'virtual_ip_address': parsed_args.virtual_ip_address})
         if parsed_args.redundancy_enabled:
             body['nuage_redirect_target'].update(
                 {'redundancy_enabled': parsed_args.redundancy_enabled})
@@ -135,6 +131,11 @@ class CreateRedirectTarget(extension.ClientExtensionCreate, RedirectTarget):
                 self.get_client(), 'subnet', parsed_args.subnet)
             body['nuage_redirect_target'].update(
                 {'subnet_id': _subnet_id})
+        if parsed_args.router:
+            _router_id = neutronV20.find_resourceid_by_name_or_id(
+                self.get_client(), 'router', parsed_args.router)
+            body['nuage_redirect_target'].update(
+                {'router_id': _router_id})
         return body
 
 
@@ -142,6 +143,47 @@ class DeleteRedirectTarget(extension.ClientExtensionDelete, RedirectTarget):
     """Delete a given redirecttarget."""
 
     shell_command = 'nuage-redirect-target-delete'
+
+
+class RedirectTargetVip(extension.NeutronClientExtension):
+    resource = 'nuage_redirect_target_vip'
+    resource_plural = '%ss' % resource
+    object_path = '/%ss' % resource.replace('_', '-')
+    resource_path = '/%ss/%%s' % resource.replace('_', '-')
+    versions = ['2.0']
+
+
+class CreateRedirectTargetVip(extension.ClientExtensionCreate,
+                              RedirectTargetVip):
+    """Create a redirect target for a given tenant."""
+
+    shell_command = 'nuage-redirect-target-vip-create'
+
+    def add_known_arguments(self, parser):
+        parser.add_argument(
+            'subnet', metavar='SUBNET',
+            help='Subnet name or ID to add redirection target.')
+        parser.add_argument(
+            'virtual_ip_address', metavar='VIRTUALIPADDRESS',
+            help='Virtual IP Address.')
+        parser.add_argument(
+            'redirecttarget', metavar='REDIRECTTARGET',
+            help=('ID or name of redirecttarget to add vip to.'))
+
+    def args2body(self, parsed_args):
+        body = {'nuage_redirect_target_vip': {
+            'virtual_ip_address': parsed_args.virtual_ip_address,
+            }}
+        _subnet_id = neutronV20.find_resourceid_by_name_or_id(
+            self.get_client(), 'subnet', parsed_args.subnet)
+        body['nuage_redirect_target_vip'].update(
+            {'subnet_id': _subnet_id})
+        _redirect_target_id = neutronV20.find_resourceid_by_name_or_id(
+            self.get_client(), 'nuage_redirect_target',
+            parsed_args.redirecttarget)
+        body['nuage_redirect_target_vip'].update(
+            {'redirect_target_id': _redirect_target_id})
+        return body
 
 
 class RedirectTargetRule(extension.NeutronClientExtension):
