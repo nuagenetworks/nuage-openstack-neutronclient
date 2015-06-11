@@ -21,53 +21,12 @@ from cliff import show
 from oslo.serialization import jsonutils
 import six
 
-from neutron.common import constants as const
 from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.i18n import _
 from neutronclient.common import utils
 from neutronclient.neutron import v2_0 as neutronV20
 
-
-def validate_rule_priority(priority):
-    try:
-        val = int(priority)
-    except (ValueError, TypeError):
-        message = _("Invalid value for priority.")
-        raise exceptions.NeutronClientException(message=message)
-
-    #VSD requires port number 0 not valid
-    if val >= 0 and val <= 999999999:
-        return
-    else:
-        message = _("Priority should be >=0 and <= 999999999")
-        raise exceptions.NeutronClientException(message=message)
-
-def validate_port_range(port_min, port_max, proto):
-    """Check that port_range is valid."""
-    if (port_min is None and port_max is None):
-        return
-    if not proto:
-        message = _("Must also specifiy protocol if port range is given.")
-        raise exceptions.NeutronClientException(message=message)
-    try:
-        port_min = int(port_min)
-        port_max = int(port_max)
-    except (ValueError, TypeError):
-        message = _("Invalid value for port_min, port_max.")
-        raise exceptions.NeutronClientException(message=message)
-
-    if proto.lower() in [const.PROTO_NAME_TCP, const.PROTO_NAME_UDP]:
-        if (port_min is not None and port_min <= port_max):
-            pass
-        else:
-            message = _("For TCP/UDP protocols, port_range_min must be "
-                        "<= port_range_max")
-            raise exceptions.NeutronClientException(message=message)
-    else:
-        if (port_min or port_max):
-            message = (_('port min, port max not applicable'))
-            raise exceptions.NeutronClientException(message=message)
 
 class RedirectTarget(extension.NeutronClientExtension):
     resource = 'nuage_redirect_target'
@@ -378,7 +337,6 @@ class CreateRedirectTargetRule(extension.ClientExtensionCreate,
             'origin_group_id': _origin_group_id,
             'action': _action}}
         if parsed_args.priority:
-            validate_rule_priority(parsed_args.priority)
             body['nuage_redirect_target_rule'].update(
                 {'priority': parsed_args.priority})
         if parsed_args.protocol:
@@ -406,8 +364,6 @@ class CreateRedirectTargetRule(extension.ClientExtensionCreate,
         if parsed_args.tenant_id:
             body['nuage_redirect_target_rule'].update(
                 {'tenant_id': parsed_args.tenant_id})
-        validate_port_range(parsed_args.port_range_min,
-                            parsed_args.port_range_max, parsed_args.protocol)
 
         return body
 
