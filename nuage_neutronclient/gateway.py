@@ -33,6 +33,9 @@ GW_RESOURCE = 'nuage_gateway'
 GW_PORT_RESOURCE = 'nuage_gateway_port'
 GW_PORT_VLAN_RESOURCE = 'nuage_gateway_vlan'
 GW_VPORT_RESOURCE = 'nuage_gateway_vport'
+GATEWAY = 'gateway'
+GATEWAYPORT = 'gatewayport'
+SUBNET = 'subnet'
 HEX_ELEM = '[0-9A-Fa-f]'
 UUID_PATTERN = '-'.join([HEX_ELEM + '{8}', HEX_ELEM + '{4}',
                          HEX_ELEM + '{4}', HEX_ELEM + '{4}',
@@ -54,6 +57,41 @@ def check_vlan_value(value):
     return vlan_val
 
 
+def get_resource_by_name_or_id(neutron_client, resource, resource_id,
+                               parent_resource, parent_id):
+    obj_lister = getattr(neutron_client, "list_%s" % resource + 's')
+
+    params = {
+        'id': resource_id,
+        parent_resource: parent_id
+    }
+    data = obj_lister(**params)
+    resource += 's'
+    resp_dict = None
+    if data[resource]:
+        resp_dict = data[resource][0]
+        _id = resp_dict['id']
+    if not resp_dict:
+        params = {
+            'name': resource_id,
+            parent_resource: parent_id
+        }
+        data = obj_lister(**params)
+        if data[resource]:
+            resp_dict = data[resource][0]
+            _id = resp_dict['id']
+
+    if not resp_dict:
+        not_found_message = (_("Unable to find %(resource)s with name "
+                             "'%(name)s'") %
+                             {'resource': resource, 'name': resource_id})
+        # 404 is used to simulate server side behavior
+        raise exceptions.NeutronClientException(
+            message=not_found_message, status_code=404)
+
+    return _id
+
+
 def get_gatway_info(parsed_args, neutron_client):
     res_id = parsed_args.id
     if res_id:
@@ -63,12 +101,12 @@ def get_gatway_info(parsed_args, neutron_client):
 
             gw_id = neutronV20.find_resourceid_by_name_or_id(
                 neutron_client, GW_RESOURCE, parsed_args.gateway)
-            gw_port_id = neutronV20.find_resourceid_by_name_or_id(
+            gw_port_id = get_resource_by_name_or_id(
                 neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport,
-                parent_id=gw_id)
-            res_id = neutronV20.find_resourceid_by_name_or_id(
-                neutron_client, GW_PORT_VLAN_RESOURCE, res_id,
-                parent_id=gw_port_id)
+                GATEWAY, gw_id)
+            res_id = get_resource_by_name_or_id(
+                neutron_client, GW_PORT_VLAN_RESOURCE, res_id, GATEWAYPORT,
+                gw_port_id)
         elif parsed_args.gatewayport:
             # id is vlan value
             check_vlan_value(res_id)
@@ -80,9 +118,9 @@ def get_gatway_info(parsed_args, neutron_client):
 
             gw_port_id = neutronV20.find_resourceid_by_name_or_id(
                 neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport)
-            res_id = neutronV20.find_resourceid_by_name_or_id(
-                neutron_client, GW_PORT_VLAN_RESOURCE, res_id,
-                parent_id=gw_port_id)
+            res_id = get_resource_by_name_or_id(
+                neutron_client, GW_PORT_VLAN_RESOURCE, res_id, GATEWAYPORT,
+                gw_port_id)
         else:
             # id is gw interface value
             res_id = neutronV20.find_resourceid_by_name_or_id(
@@ -173,9 +211,9 @@ class ShowGatewayPort(extension.ClientExtensionShow, GatewayPort):
                 gw_id = neutronV20.find_resourceid_by_name_or_id(
                     neutron_client, GW_RESOURCE, parsed_args.gateway)
 
-                _id = neutronV20.find_resourceid_by_name_or_id(
+                _id = get_resource_by_name_or_id(
                     neutron_client, GW_PORT_RESOURCE, parsed_args.id,
-                    parent_id=gw_id)
+                    GATEWAY, gw_id)
             else:
                 _id = neutronV20.find_resourceid_by_name_or_id(
                     neutron_client, GW_PORT_RESOURCE, parsed_args.id)
@@ -261,9 +299,13 @@ class ListGatewayPortVlan(extension.ClientExtensionList, GatewayPortVlan,
             params['gateway'] = gw_id
 
         if parsed_args.gatewayport:
-            gw_port_id = neutronV20.find_resourceid_by_name_or_id(
-                neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport,
-                parent_id=gw_id)
+            if not gw_id:
+                gw_port_id = neutronV20.find_resourceid_by_name_or_id(
+                    neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport)
+            else:
+                gw_port_id = get_resource_by_name_or_id(
+                    neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport,
+                    GATEWAY, gw_id)
             params['gatewayport'] = gw_port_id
 
         obj_lister = getattr(neutron_client,
@@ -311,12 +353,13 @@ class ShowGatewayPortVlan(extension.ClientExtensionShow,
 
                 gw_id = neutronV20.find_resourceid_by_name_or_id(
                     neutron_client, GW_RESOURCE, parsed_args.gateway)
-                gw_port_id = neutronV20.find_resourceid_by_name_or_id(
+                gw_port_id = get_resource_by_name_or_id(
                     neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport,
-                    parent_id=gw_id)
-                _id = neutronV20.find_resourceid_by_name_or_id(
-                    neutron_client, GW_PORT_VLAN_RESOURCE, _id,
-                    parent_id=gw_port_id)
+                    GATEWAY, gw_id)
+                _id = get_resource_by_name_or_id(
+                    neutron_client, GW_PORT_VLAN_RESOURCE, _id, GATEWAYPORT,
+                    gw_port_id)
+
                 params['gateway'] = gw_id
                 params['gatewayport'] = gw_port_id
             elif parsed_args.gatewayport:
@@ -330,9 +373,9 @@ class ShowGatewayPortVlan(extension.ClientExtensionShow,
 
                 gw_port_id = neutronV20.find_resourceid_by_name_or_id(
                     neutron_client, GW_PORT_RESOURCE, parsed_args.gatewayport)
-                _id = neutronV20.find_resourceid_by_name_or_id(
-                    neutron_client, GW_PORT_VLAN_RESOURCE, _id,
-                    parent_id=gw_port_id)
+                _id = get_resource_by_name_or_id(
+                    neutron_client, GW_PORT_VLAN_RESOURCE, _id, GATEWAYPORT,
+                    gw_port_id)
                 params['gatewayport'] = gw_port_id
             else:
                 # id is gw interface value
@@ -396,9 +439,9 @@ class CreateGatewayPortVlan(extension.ClientExtensionCreate,
             body[self.resource].update(
                 {'gateway': gw_id})
 
-            gw_port_id = neutronV20.find_resourceid_by_name_or_id(
+            gw_port_id = get_resource_by_name_or_id(
                 self.get_client(), GW_PORT_RESOURCE, parsed_args.gatewayport,
-                parent_id=gw_id)
+                GATEWAY, gw_id)
 
             body[self.resource].update(
                 {'gatewayport': gw_port_id})
@@ -642,9 +685,8 @@ class DeleteGatewayVPort(extension.ClientExtensionDelete, GatewayVPort):
         subn_id = neutronV20.find_resourceid_by_name_or_id(
             neutron_client, 'subnet', parsed_args.subnet)
 
-        vport_id = neutronV20.find_resourceid_by_name_or_id(
-            neutron_client, GW_VPORT_RESOURCE, parsed_args.id,
-            parent_id=subn_id)
+        vport_id = get_resource_by_name_or_id(
+            neutron_client, GW_VPORT_RESOURCE, parsed_args.id, SUBNET, subn_id)
 
         neutron_client.delete_nuage_gateway_vport(vport_id)
         print((_('Vport %s deleted successfully') %
@@ -675,9 +717,8 @@ class ShowGatewayVPort(extension.ClientExtensionShow, GatewayVPort):
             neutron_client, 'subnet', parsed_args.subnet)
         params['subnet'] = subn_id
 
-        vport_id = neutronV20.find_resourceid_by_name_or_id(
-            neutron_client, GW_VPORT_RESOURCE, parsed_args.id,
-            parent_id=subn_id)
+        vport_id = get_resource_by_name_or_id(
+            neutron_client, GW_VPORT_RESOURCE, parsed_args.id, SUBNET, subn_id)
 
         obj_shower = getattr(neutron_client, "show_%s" % self.cmd_resource)
         data = obj_shower(vport_id, **params)
