@@ -144,11 +144,13 @@ class Gateway(extension.NeutronClientExtension):
 
 
 class ListGateway(extension.ClientExtensionList, Gateway):
+    """List all gateways."""
     shell_command = 'nuage-gateway-list'
     list_columns = ['id', 'name', 'type', 'status', 'template', 'systemid']
 
 
 class ShowGateway(extension.ClientExtensionShow, Gateway):
+    """Show information of a given gateway."""
     shell_command = 'nuage-gateway-show'
 
 
@@ -188,7 +190,7 @@ class ListGatewayPort(extension.ClientExtensionList, GatewayPort):
 
 
 class ShowGatewayPort(extension.ClientExtensionShow, GatewayPort):
-    """Show information of a given gateway."""
+    """Show information of a given gateway port."""
     shell_command = 'nuage-gateway-port-show'
 
     def get_parser(self, prog_name):
@@ -324,7 +326,7 @@ class ListGatewayPortVlan(extension.ClientExtensionList, GatewayPortVlan,
 
 class ShowGatewayPortVlan(extension.ClientExtensionShow,
                           GatewayPortVlan, show.ShowOne):
-    """Show information of a given gateway port."""
+    """Show information of a given gateway port vlan."""
     shell_command = 'nuage-gateway-vlan-show'
 
     def get_parser(self, prog_name):
