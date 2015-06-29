@@ -55,7 +55,7 @@ class ApplicationDomain(extension.NeutronClientExtension):
 
 class ApplicationDomainList(extension.ClientExtensionList,
                             ApplicationDomain):
-
+    """List all application domains."""
     shell_command = 'nuage-applicationdomain-list'
     list_columns = ['id', 'name']
     pagination_support = True
@@ -64,19 +64,19 @@ class ApplicationDomainList(extension.ClientExtensionList,
 
 class ApplicationDomainDelete(extension.ClientExtensionDelete,
                               ApplicationDomain):
-
+    """Delete an application domain."""
     shell_command = 'nuage-applicationdomain-delete'
 
 
 class ApplicationDomainShow(extension.ClientExtensionShow,
                             ApplicationDomain):
-
+    """Show information of a given application domain."""
     shell_command = 'nuage-applicationdomain-show'
 
 
 class ApplicationDomainCreate(extension.ClientExtensionCreate,
                               ApplicationDomain):
-
+    """Create an application domain."""
     shell_command = 'nuage-applicationdomain-create'
 
     def add_known_arguments(self, parser):
@@ -115,7 +115,7 @@ def appdomain_updatable_args2body(parsed_args, body):
 
 class ApplicationDomainUpdate(extension.ClientExtensionUpdate,
                               ApplicationDomain):
-
+    """Update information of a given application domain."""
     shell_command = 'nuage-applicationdomain-update'
 
     def add_known_arguments(self, parser):
@@ -138,7 +138,7 @@ class Application(extension.NeutronClientExtension):
 
 class ApplicationList(extension.ClientExtensionList,
                       Application):
-
+    """List all applications."""
     shell_command = 'nuage-application-list'
     list_columns = ['id', 'name', 'associateddomainid']
     pagination_support = True
@@ -147,13 +147,13 @@ class ApplicationList(extension.ClientExtensionList,
 
 class ApplicationShow(extension.ClientExtensionShow,
                       Application):
-
+    """Show information of a given application."""
     shell_command = 'nuage-application-show'
 
 
 class ApplicationCreate(extension.ClientExtensionCreate,
                         Application):
-
+    """Create an application."""
     shell_command = 'nuage-application-create'
 
     def add_known_arguments(self, parser):
@@ -187,7 +187,7 @@ class ApplicationCreate(extension.ClientExtensionCreate,
 
 class ApplicationDelete(extension.ClientExtensionDelete,
                         Application):
-
+    """Delete an application."""
     shell_command = 'nuage-application-delete'
 
 
@@ -211,7 +211,7 @@ def app_updatable_args2body(parsed_args, body):
 
 class ApplicationUpdate(extension.ClientExtensionUpdate,
                         Application):
-
+    """Update information of a given application."""
     shell_command = 'nuage-application-update'
 
     def add_known_arguments(self, parser):
@@ -233,7 +233,7 @@ class Tier(extension.NeutronClientExtension):
 
 
 class TierList(extension.ClientExtensionList, Tier):
-
+    """List all tiers."""
     shell_command = 'nuage-tier-list'
     list_columns = ['id', 'name', 'type', 'associatedappid']
     pagination_support = True
@@ -257,14 +257,14 @@ class TierList(extension.ClientExtensionList, Tier):
 
 
 class TierShow(extension.ClientExtensionShow, Tier):
-
+    """Show information of a given tier."""
     shell_command = 'nuage-tier-show'
     log = logging.getLogger(__name__ + '.ShowTier')
     allow_names = False
 
 
 class TierCreate(extension.ClientExtensionCreate, Tier):
-
+    """Create a tier."""
     shell_command = 'nuage-tier-create'
 
     def add_known_arguments(self, parser):
@@ -314,7 +314,6 @@ class TierCreate(extension.ClientExtensionCreate, Tier):
                                             " --app-id <Application ID>"
                                             " --type <Type of tier>"))
 
-
         if parsed_args.type != 'STANDARD' and parsed_args.fip_pool_id:
             raise exceptions.CommandError(_("FIP Pool ID is applicable only"
                                             " for tier creation of type"
@@ -330,7 +329,7 @@ class TierCreate(extension.ClientExtensionCreate, Tier):
 
 
 class TierDelete(extension.ClientExtensionDelete, Tier):
-
+    """Delete a tier."""
     shell_command = 'nuage-tier-delete'
     allow_names = False
 
@@ -353,7 +352,7 @@ def tier_updatable_args2body(parsed_args, body):
 
 
 class TierUpdate(extension.ClientExtensionUpdate, Tier):
-
+    """Update information of a given tier."""
     shell_command = 'nuage-tier-update'
 
     def add_known_arguments(self, parser):
@@ -375,7 +374,7 @@ class Appdport(extension.NeutronClientExtension):
 
 
 class AppdportList(extension.ClientExtensionList, Appdport):
-
+    """List all application designer ports."""
     shell_command = 'nuage-appdport-list'
     resource = 'appdport'
     _formatters = {'fixed_ips': _format_fixed_ips, }
@@ -386,7 +385,7 @@ class AppdportList(extension.ClientExtensionList, Appdport):
 
 
 class AppdportShow(extension.ClientExtensionShow, Appdport):
-
+    """Show information of a given application designer port."""
     shell_command = 'nuage-appdport-show'
     resource = 'appdport'
 
@@ -420,7 +419,7 @@ class AppdportShow(extension.ClientExtensionShow, Appdport):
 
 
 class AppdportCreate(extension.ClientExtensionCreate, Appdport):
-
+    """Create an application designer port."""
     shell_command = 'nuage-appdport-create'
 
     def add_known_arguments(self, parser):
@@ -447,7 +446,7 @@ class AppdportCreate(extension.ClientExtensionCreate, Appdport):
 
 
 class AppdportDelete(extension.ClientExtensionDelete, Appdport):
-
+    """Delete an application designer port."""
     shell_command = 'nuage-appdport-delete'
     resource = 'appdport'
 
@@ -488,7 +487,7 @@ def appdport_updatable_args2body(parsed_args, body):
 
 
 class AppdportUpdate(extension.ClientExtensionUpdate, Appdport):
-
+    """Update information of a given application designer port."""
     shell_command = 'nuage-appdport-update'
 
     def add_known_arguments(self, parser):
@@ -509,7 +508,7 @@ class Service(extension.NeutronClientExtension):
 
 
 class ServiceList(extension.ClientExtensionList, Service):
-
+    """List all services."""
     shell_command = 'nuage-service-list'
 
     list_columns = ['id', 'name', 'direction', 'protocol',
@@ -519,12 +518,12 @@ class ServiceList(extension.ClientExtensionList, Service):
 
 
 class ServiceShow(extension.ClientExtensionShow, Service):
-
+    """Show information of a given service."""
     shell_command = 'nuage-service-show'
 
 
 class ServiceCreate(extension.ClientExtensionCreate, Service):
-
+    """Create a service"""
     shell_command = 'nuage-service-create'
 
     @staticmethod
@@ -615,7 +614,7 @@ class ServiceCreate(extension.ClientExtensionCreate, Service):
 
 
 class ServiceDelete(extension.ClientExtensionDelete, Service):
-
+    """Delete a service"""
     shell_command = 'nuage-service-delete'
 
 
@@ -636,7 +635,7 @@ def service_updatable_args2body(parsed_args, body):
 
 
 class ServiceUpdate(extension.ClientExtensionUpdate, Service):
-
+    """Update information of a given service."""
     shell_command = 'nuage-service-update'
 
     def add_known_arguments(self, parser):
@@ -658,7 +657,7 @@ class Flow(extension.NeutronClientExtension):
 
 
 class FlowList(extension.ClientExtensionList, Flow):
-
+    """List all flows"""
     shell_command = 'nuage-flow-list'
     list_columns = ['id', 'name', 'origin_tier',
                     'dest_tier', 'application_id']
@@ -683,13 +682,13 @@ class FlowList(extension.ClientExtensionList, Flow):
 
 
 class FlowShow(extension.ClientExtensionShow, Flow):
-
+    """Show information of a given flow."""
     shell_command = 'nuage-flow-show'
     allow_names = False
 
 
 class FlowCreate(extension.ClientExtensionCreate, Flow):
-
+    """Create a flow"""
     shell_command = 'nuage-flow-create'
 
     def add_known_arguments(self, parser):
@@ -753,7 +752,7 @@ class FlowCreate(extension.ClientExtensionCreate, Flow):
 
 
 class FlowDelete(extension.ClientExtensionDelete, Flow):
-
+    """Delete a flow"""
     shell_command = 'nuage-flow-delete'
     allow_names = False
 
@@ -775,7 +774,7 @@ def flow_updatable_args2body(parsed_args, body):
 
 
 class FlowUpdate(extension.ClientExtensionUpdate, Flow):
-
+    """Update information of a given flow."""
     shell_command = 'nuage-flow-update'
 
     def add_known_arguments(self, parser):
