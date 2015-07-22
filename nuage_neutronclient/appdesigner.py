@@ -57,7 +57,7 @@ class ApplicationDomainList(extension.ClientExtensionList,
                             ApplicationDomain):
     """List all application domains."""
     shell_command = 'nuage-applicationdomain-list'
-    list_columns = ['id', 'name']
+    list_columns = ['id', 'name', 'rd', 'rt', 'tunnel_type']
     pagination_support = True
     sorting_support = True
 
@@ -87,12 +87,27 @@ class ApplicationDomainCreate(extension.ClientExtensionCreate,
             '--nuage-domain-template',
             help='ID of the domian template that will be used'
                  ' to instantiate the application domain'),
+        parser.add_argument(
+            '--rd',
+            help='Route Distinguisher for application deployment.'),
+        parser.add_argument(
+            '--rt',
+            help='Route Target for application deployment.'),
+        parser.add_argument(
+            '--tunnel-type',
+            help='Tunnel type for application deployment.'),
 
     def args2body(self, parsed_args):
         body = {'application_domain': {'name': parsed_args.name}, }
         if parsed_args.nuage_domain_template:
             body['application_domain'].update(
                 {'nuage_domain_template': parsed_args.nuage_domain_template})
+        if parsed_args.rd:
+            body['application_domain'].update({'rd': parsed_args.rd})
+        if parsed_args.rt:
+            body['application_domain'].update({'rt': parsed_args.rt})
+        if parsed_args.tunnel_type:
+            body['application_domain'].update({'tunnel_type': parsed_args.tunnel_type})
         return body
 
 
