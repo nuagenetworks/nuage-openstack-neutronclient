@@ -18,6 +18,7 @@ from neutronclient.neutron import v2_0 as neutronV20
 
 
 class UpdateFloatingIP(extension.ClientExtensionUpdate):
+    """Update floating IP's information."""
     resource = 'floatingip'
     shell_command = '%s-update' % resource
     resource_path = '/floatingips/%s'
