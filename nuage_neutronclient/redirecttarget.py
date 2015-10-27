@@ -18,7 +18,7 @@ import re
 
 from cliff import lister
 from cliff import show
-from oslo.serialization import jsonutils
+from oslo_serialization import jsonutils
 import six
 
 from neutronclient.common import exceptions
