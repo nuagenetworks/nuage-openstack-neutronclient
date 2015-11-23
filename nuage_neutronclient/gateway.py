@@ -155,7 +155,6 @@ class ShowGateway(extension.ClientExtensionShow, Gateway):
 
 
 class GatewayPort(extension.NeutronClientExtension):
-    parent_resource = 'gateway'
     resource = GW_PORT_RESOURCE
     resource_plural = '%ss' % resource
     object_path = '/%ss' % resource.replace('_', '-')
@@ -253,7 +252,6 @@ class ShowGatewayPort(extension.ClientExtensionShow, GatewayPort):
 
 
 class GatewayPortVlan(extension.NeutronClientExtension):
-    parent_resource = 'gatewayport'
     resource = GW_PORT_VLAN_RESOURCE
     resource_plural = '%ss' % resource
     object_path = '/%ss' % resource.replace('_', '-')
@@ -612,7 +610,6 @@ class UnassignGatewayPortVlan(extension.ClientExtensionUpdate,
 
 
 class GatewayVPort(extension.NeutronClientExtension):
-    parent_resource = 'subnet'
     resource = GW_VPORT_RESOURCE
     resource_plural = '%ss' % resource
     object_path = '/%ss' % resource.replace('_', '-')
