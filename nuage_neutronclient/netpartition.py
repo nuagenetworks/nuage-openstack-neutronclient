@@ -23,10 +23,14 @@ class NetPartition(extension.NeutronClientExtension):
     versions = ['2.0']
 
 class NetPartitionList(extension.ClientExtensionList, NetPartition):
+    """List netpartitions that belong to a given tenant."""
+
     shell_command = 'nuage-netpartition-list'
     list_columns = ['id', 'name']
 
 class NetPartitionCreate(extension.ClientExtensionCreate, NetPartition):
+    """Create a netpartition for a given tenant."""
+
     shell_command = 'nuage-netpartition-create'
 
     def add_known_arguments(self, parser):
@@ -39,8 +43,12 @@ class NetPartitionCreate(extension.ClientExtensionCreate, NetPartition):
         return body
 
 class NetPartitionDelete(extension.ClientExtensionDelete, NetPartition):
+    """Delete a given netpartition."""
+
     shell_command = 'nuage-netpartition-delete'
 
 
 class NetPartitionShow(extension.ClientExtensionShow, NetPartition):
+    """Show information of a given netpartition."""
+
     shell_command = 'nuage-netpartition-show'
