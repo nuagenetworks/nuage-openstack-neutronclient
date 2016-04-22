@@ -1,0 +1,65 @@
+# Copyright 2016 Alcatel-Lucent USA Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#    License for the specific language governing permissions and limitations
+#    under the License.
+
+from neutronclient.common import exceptions
+from neutronclient.common import extension
+from neutronclient.i18n import _
+from neutronclient.neutron.v2_0 import subnet
+
+
+class CreateSubnet(extension.ClientExtensionCreate,
+                   subnet.CreateSubnet):
+    shell_command = 'subnet-create'
+    object_path = '/subnets'
+
+    def add_known_arguments(self, parser):
+        super(CreateSubnet, self).add_known_arguments(parser)
+        parser.add_argument(
+            '--net-partition',
+            help=_('ID or name of the net partition.'))
+        parser.add_argument(
+            '--nuagenet',
+            help=_('ID of the subnet or l2domain on the VSD.'))
+        parser.add_argument(
+            '--nuage-uplink',
+            help=_('ID of the shared resource zone on the VSD.'))
+
+        group = parser.add_mutually_exclusive_group(required=False)
+        group.add_argument(
+            '--underlay-enabled',
+            help=_('Sets underlay to False for this subnet.'))
+        group.add_argument(
+            '--underlay-disabled',
+            help=_('Sets underlay to True for this subnet.'))
+
+    def args2body(self, parsed_args):
+        body = super(CreateSubnet, self).args2body(parsed_args)
+        subnet = body['subnet']
+        if ((parsed_args.nuagenet is None) !=
+                (parsed_args.net_partition is None)):
+            msg = _("'nuagenet' and 'net_partition parameters should both be "
+                    "given for creating a vsd-managed subnet.")
+            raise exceptions.NeutronClientException(message=msg,
+                                                    status_code=400)
+        if parsed_args.net_partition:
+            subnet['net_partition'] = parsed_args.net_partition
+        if parsed_args.nuagenet:
+            subnet['nuagenet'] = parsed_args.nuagenet
+        if parsed_args.nuage_uplink:
+            subnet['nuage_uplink'] = parsed_args.nuage_uplink
+        if parsed_args.underlay_enabled:
+            subnet['underlay'] = True
+        if parsed_args.underlay_disabled:
+            subnet['underlay'] = False
+        return body
