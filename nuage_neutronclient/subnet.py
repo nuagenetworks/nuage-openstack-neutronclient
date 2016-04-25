@@ -41,7 +41,7 @@ class CreateSubnet(extension.ClientExtensionCreate,
 
     def args2body(self, parsed_args):
         body = super(CreateSubnet, self).args2body(parsed_args)
-        if ((parsed_args.nuagenet is None) !=
+        if ((parsed_args.nuagenet is not None) and
                 (parsed_args.net_partition is None)):
             msg = _("'nuagenet' and 'net_partition' parameters should both be "
                     "given for creating a vsd-managed subnet.")
