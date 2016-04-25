@@ -11,10 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
 from neutronclient.common import exceptions
 from neutronclient.common import extension
+from neutronclient.common import utils
 from neutronclient.i18n import _
+from neutronclient.neutron import v2_0 as neutronV20
 from neutronclient.neutron.v2_0 import subnet
 
 
@@ -34,32 +35,19 @@ class CreateSubnet(extension.ClientExtensionCreate,
         parser.add_argument(
             '--nuage-uplink',
             help=_('ID of the shared resource zone on the VSD.'))
-
-        group = parser.add_mutually_exclusive_group(required=False)
-        group.add_argument(
-            '--underlay-enabled',
-            help=_('Sets underlay to False for this subnet.'))
-        group.add_argument(
-            '--underlay-disabled',
-            help=_('Sets underlay to True for this subnet.'))
+        utils.add_boolean_argument(
+            parser, '--underlay',
+            help=_('Whether to enable or disable underlay'))
 
     def args2body(self, parsed_args):
         body = super(CreateSubnet, self).args2body(parsed_args)
-        subnet = body['subnet']
         if ((parsed_args.nuagenet is None) !=
                 (parsed_args.net_partition is None)):
-            msg = _("'nuagenet' and 'net_partition parameters should both be "
+            msg = _("'nuagenet' and 'net_partition' parameters should both be "
                     "given for creating a vsd-managed subnet.")
             raise exceptions.NeutronClientException(message=msg,
                                                     status_code=400)
-        if parsed_args.net_partition:
-            subnet['net_partition'] = parsed_args.net_partition
-        if parsed_args.nuagenet:
-            subnet['nuagenet'] = parsed_args.nuagenet
-        if parsed_args.nuage_uplink:
-            subnet['nuage_uplink'] = parsed_args.nuage_uplink
-        if parsed_args.underlay_enabled:
-            subnet['underlay'] = True
-        if parsed_args.underlay_disabled:
-            subnet['underlay'] = False
+        neutronV20.update_dict(parsed_args, body['subnet'],
+                               ['net_partition', 'nuagenet', 'nuage_uplink',
+                                'underlay'])
         return body
