@@ -52,7 +52,7 @@ class ListRedirectTarget(extension.ClientExtensionList, RedirectTarget):
             help=('ID or name of router to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         subnet = None
@@ -217,7 +217,7 @@ class ListRedirectTargetRule(extension.ClientExtensionList,
             help=('ID or name of router to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         subnet = None

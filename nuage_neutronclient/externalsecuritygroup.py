@@ -51,7 +51,7 @@ class ListExternalSecurityGroup(extension.ClientExtensionList, ExternalSecurityG
             help=('ID or name of router to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         subnet = None
@@ -159,7 +159,7 @@ class ListExternalSecurityGroupRule(extension.ClientExtensionList,
             help=('ID or name of external security group to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         _external_group_id = neutronV20.find_resourceid_by_name_or_id(

@@ -50,7 +50,7 @@ class NuagePolicyGroupList(extension.ClientExtensionList,
                    'associated with'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         filters = {}
         if parsed_args.for_subnet:
@@ -79,7 +79,7 @@ class NuagePolicyGroupShow(extension.ClientExtensionShow,
     """Show a given VSD policy group."""
     shell_command = 'nuage-policy-group-show'
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         policy_group = self.get_client().show_nuage_policy_group(
             parsed_args.id)[self.resource]
         return self.dict2columns(policy_group)

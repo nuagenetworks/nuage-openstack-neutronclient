@@ -175,7 +175,7 @@ class ListGatewayPort(extension.ClientExtensionList, GatewayPort):
             help=_('ID or name of gateway to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         if not parsed_args.gateway:
@@ -203,7 +203,7 @@ class ShowGatewayPort(extension.ClientExtensionShow, GatewayPort):
             help=_('Name or ID of the gateway'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         params = {}
@@ -278,7 +278,7 @@ class ListGatewayPortVlan(extension.ClientExtensionList, GatewayPortVlan,
             help=_('ID or name of gatewayport to look up.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         params = dict()
@@ -341,7 +341,7 @@ class ShowGatewayPortVlan(extension.ClientExtensionShow,
             help=_('Name or ID of the gatewayport'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         params = {}
@@ -708,7 +708,7 @@ class ShowGatewayVPort(extension.ClientExtensionShow, GatewayVPort):
             help=_('ID of the subnet'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         params = {}
@@ -765,7 +765,7 @@ class ListGatewayVPort(extension.ClientExtensionList, GatewayVPort):
             help=_('ID of the tenant.'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         neutron_client.format = parsed_args.request_format
         # if not parsed_args.subnet:

@@ -46,7 +46,7 @@ class NuageFloatingIpList(extension.ClientExtensionList,
             help=_('ID or name of port to find policy_groups for'))
         return parser
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         neutron_client = self.get_client()
         filters = {}
         if parsed_args.for_subnet:
@@ -71,7 +71,7 @@ class NuageFloatingIpShow(extension.ClientExtensionShow,
     """Show a given VSD floatingip."""
     shell_command = 'nuage-floatingip-show'
 
-    def get_data(self, parsed_args):
+    def take_action(self, parsed_args):
         fip = self.get_client().show_nuage_floatingip(
             parsed_args.id)[self.resource]
         return self.dict2columns(fip)
