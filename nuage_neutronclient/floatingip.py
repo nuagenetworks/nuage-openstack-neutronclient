@@ -33,11 +33,24 @@ class UpdateFloatingIP(extension.ClientExtensionUpdate):
                    'multiple IPs).'))
         parser.add_argument(
             '--nuage-fip-rate',
-            help=_('Rate limiting applied to the floating IP. '
+            help=_('DEPRECATED: Use --nuage-egress-fip-rate-kbps. '
+                   'Rate limiting applied to the floating IP. '
+                   'Can be -1 for unlimited.'))
+        parser.add_argument(
+            '--nuage-ingress-fip-rate-kbps',
+            help=_('Rate limiting applied to the floating IP in kbps and'
+                   ' ingress direction. '
+                   'Can be -1 for unlimited.'))
+        parser.add_argument(
+            '--nuage-egress-fip-rate-kbps',
+            help=_('Rate limiting applied to the floating IP in kbps and '
+                   'egress direction. '
                    'Can be -1 for unlimited.'))
 
     def args2body(self, parsed_args):
         body = {self.resource: {}}
-        updateables = ['port_id', 'fixed_ip_address', 'nuage_fip_rate']
+        updateables = ['port_id', 'fixed_ip_address', 'nuage_fip_rate',
+                       'nuage_ingress_fip_rate_kbps',
+                       'nuage_egress_fip_rate_kbps']
         neutronV20.update_dict(parsed_args, body[self.resource], updateables)
         return body
