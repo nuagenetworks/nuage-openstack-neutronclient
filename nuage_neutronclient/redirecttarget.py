@@ -68,7 +68,7 @@ class ListRedirectTarget(extension.ClientExtensionList, RedirectTarget):
             router = neutronV20.find_resourceid_by_name_or_id(
                 self.get_client(), 'router', parsed_args.router)
             self.values_specs.append('--router=%s' % router)
-        resp = super(ListRedirectTarget, self).get_data(parsed_args)
+        resp = super(ListRedirectTarget, self).take_action(parsed_args)
         return resp
 
 
@@ -235,7 +235,7 @@ class ListRedirectTargetRule(extension.ClientExtensionList,
             self.values_specs.append('--subnet=%s' % subnet)
         if router:
             self.values_specs.append('--router=%s' % router)
-        resp = super(ListRedirectTargetRule, self).get_data(parsed_args)
+        resp = super(ListRedirectTargetRule, self).take_action(parsed_args)
         return resp
 
     @staticmethod

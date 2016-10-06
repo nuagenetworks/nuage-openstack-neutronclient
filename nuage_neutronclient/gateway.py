@@ -185,7 +185,7 @@ class ListGatewayPort(extension.ClientExtensionList, GatewayPort):
         gw_id = neutronV20.find_resourceid_by_name_or_id(
             neutron_client, 'nuage_gateway', parsed_args.gateway)
         self.values_specs.append('--gateway=%s' % gw_id)
-        return super(ListGatewayPort, self).get_data(parsed_args)
+        return super(ListGatewayPort, self).take_action(parsed_args)
 
 
 class ShowGatewayPort(extension.ClientExtensionShow, GatewayPort):
@@ -776,4 +776,4 @@ class ListGatewayVPort(extension.ClientExtensionList, GatewayVPort):
         self.values_specs.append('--subnet=%s' % subn_id)
         if parsed_args.tenant_id:
             self.values_specs.append('--tenant=%s' % parsed_args.tenant_id)
-        return super(ListGatewayVPort, self).get_data(parsed_args)
+        return super(ListGatewayVPort, self).take_action(parsed_args)

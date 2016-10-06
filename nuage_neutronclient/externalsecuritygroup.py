@@ -67,7 +67,7 @@ class ListExternalSecurityGroup(extension.ClientExtensionList, ExternalSecurityG
             router = neutronV20.find_resourceid_by_name_or_id(
                 self.get_client(), 'router', parsed_args.router)
             self.values_specs.append('--router=%s' % router)
-        resp = super(ListExternalSecurityGroup, self).get_data(parsed_args)
+        resp = super(ListExternalSecurityGroup, self).take_action(parsed_args)
         return resp
 
 
@@ -166,7 +166,8 @@ class ListExternalSecurityGroupRule(extension.ClientExtensionList,
             self.get_client(), 'nuage_external_security_group',
             parsed_args.remote_external_group)
         self.values_specs.append('--external_group=%s' % _external_group_id)
-        resp = super(ListExternalSecurityGroupRule, self).get_data(parsed_args)
+        resp = super(ListExternalSecurityGroupRule, self).take_action(
+            parsed_args)
         return resp
 
     @staticmethod
