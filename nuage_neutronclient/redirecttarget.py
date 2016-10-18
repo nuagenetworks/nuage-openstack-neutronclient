@@ -14,17 +14,9 @@
 #
 from __future__ import print_function
 
-import re
-
-from cliff import lister
-from cliff import show
-from oslo_serialization import jsonutils
-import six
-
 from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.i18n import _
-from neutronclient.common import utils
 from neutronclient.neutron import v2_0 as neutronV20
 
 
@@ -202,8 +194,8 @@ class ListRedirectTargetRule(extension.ClientExtensionList,
     list_columns = ['id', 'action', 'protocol', 'priority', 'origin_group_id',
                     'port_range_min', 'port_range_max', 'remote_ip_prefix',
                     'remote_group_id', 'redirect_target_id']
-    #replace_rules: key is an attribute name in Neutron API and
-    #corresponding value is a display name shown by CLI.
+    # replace_rules: key is an attribute name in Neutron API and
+    # corresponding value is a display name shown by CLI.
     replace_rules = {'origin_group_id': 'origin_security_group',
                      'remote_group_id': 'remote_group'}
 
@@ -303,12 +295,13 @@ class ListRedirectTargetRule(extension.ClientExtensionList,
         parsed_args.columns = self.replace_columns(parsed_args.columns,
                                                    self.replace_rules,
                                                    reverse=True)
-        info = super(ListRedirectTargetRule, self).setup_columns(info,
-                                                                parsed_args)
+        info = super(ListRedirectTargetRule,
+                     self).setup_columns(info, parsed_args)
         cols = info[0]
         cols = self.replace_columns(info[0], self.replace_rules)
         parsed_args.columns = cols
         return (cols, info[1])
+
 
 class ShowRedirectTargetRule(extension.ClientExtensionShow,
                              RedirectTargetRule):
@@ -368,7 +361,8 @@ class CreateRedirectTargetRule(extension.ClientExtensionCreate,
         if parsed_args.action:
             _action = parsed_args.action
             if _action not in ['FORWARD', 'REDIRECT']:
-                message = (_('valid rule action values are FORWARD or REDIRECT'))
+                message = (_('valid rule action values are'
+                             ' FORWARD or REDIRECT'))
                 raise exceptions.NeutronClientException(message=message)
         else:
             message = (_('--action should be specified'))

@@ -14,17 +14,9 @@
 #
 from __future__ import print_function
 
-import re
-
-from cliff import lister
-from cliff import show
-from oslo_serialization import jsonutils
-import six
-
 from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.i18n import _
-from neutronclient.common import utils
 from neutronclient.neutron import v2_0 as neutronV20
 
 
@@ -36,7 +28,8 @@ class ExternalSecurityGroup(extension.NeutronClientExtension):
     versions = ['2.0']
 
 
-class ListExternalSecurityGroup(extension.ClientExtensionList, ExternalSecurityGroup):
+class ListExternalSecurityGroup(extension.ClientExtensionList,
+                                ExternalSecurityGroup):
     """List External Security Groups that belong to a given subnet"""
     shell_command = 'nuage-external-security-group-list'
     list_columns = ['id', 'name', 'description', 'extended_community_id']
@@ -71,14 +64,16 @@ class ListExternalSecurityGroup(extension.ClientExtensionList, ExternalSecurityG
         return resp
 
 
-class ShowExternalSecurityGroup(extension.ClientExtensionShow, ExternalSecurityGroup):
+class ShowExternalSecurityGroup(extension.ClientExtensionShow,
+                                ExternalSecurityGroup):
     """Show information of a given External Security Group."""
 
     shell_command = 'nuage-external-security-group-show'
     allow_names = True
 
 
-class CreateExternalSecurityGroup(extension.ClientExtensionCreate, ExternalSecurityGroup):
+class CreateExternalSecurityGroup(extension.ClientExtensionCreate,
+                                  ExternalSecurityGroup):
     """Create a External Security Group for a given tenant."""
 
     shell_command = 'nuage-external-security-group-create'
@@ -140,20 +135,21 @@ class ExternalSecurityGroupRule(extension.NeutronClientExtension):
 
 
 class ListExternalSecurityGroupRule(extension.ClientExtensionList,
-                             ExternalSecurityGroupRule):
+                                    ExternalSecurityGroupRule):
     """List external security group rules that belong to a given tenant."""
 
     shell_command = 'nuage-external-security-group-rule-list'
     list_columns = ['id', 'protocol', 'direction', 'origin_group_id',
                     'port_range_min', 'port_range_max',
                     'remote_external_group_id']
-    #replace_rules: key is an attribute name in Neutron API and
-    #corresponding value is a display name shown by CLI.
+    # replace_rules: key is an attribute name in Neutron API and
+    # corresponding value is a display name shown by CLI.
     replace_rules = {'origin_group_id': 'origin_security_group',
                      'remote_external_group_id': 'remote_group'}
 
     def get_parser(self, prog_name):
-        parser = super(ListExternalSecurityGroupRule, self).get_parser(prog_name)
+        parser = super(ListExternalSecurityGroupRule,
+                       self).get_parser(prog_name)
         parser.add_argument(
             'remote_external_group', metavar='REMOTE_GROUP',
             help=('ID or name of external security group to look up.'))
@@ -235,12 +231,13 @@ class ListExternalSecurityGroupRule(extension.ClientExtensionList,
         parsed_args.columns = self.replace_columns(parsed_args.columns,
                                                    self.replace_rules,
                                                    reverse=True)
-        info = super(ListExternalSecurityGroupRule, self).setup_columns(info,
-                                                                parsed_args)
+        info = super(ListExternalSecurityGroupRule,
+                     self).setup_columns(info, parsed_args)
         cols = info[0]
         cols = self.replace_columns(info[0], self.replace_rules)
         parsed_args.columns = cols
         return (cols, info[1])
+
 
 class ShowExternalSecurityGroupRule(extension.ClientExtensionShow,
                                     ExternalSecurityGroupRule):

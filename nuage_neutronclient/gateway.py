@@ -24,8 +24,8 @@ import six
 
 from neutronclient.common import exceptions
 from neutronclient.common import extension
-from neutronclient.i18n import _
 from neutronclient.common import utils
+from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
 
 
@@ -329,10 +329,6 @@ class ShowGatewayPortVlan(extension.ClientExtensionShow,
 
     def get_parser(self, prog_name):
         parser = super(ShowGatewayPortVlan, self).get_parser(prog_name)
-        # parser.add_argument(
-        #     'id',
-        #     help=_('ID of the gateway interface or vlan value(0-4094) when '
-        #            'used with --gatewayport or --gateway and --gatewayport '))
         parser.add_argument(
             '--gateway', metavar='GATEWAY',
             help=_('Name or ID of the gateway'))
@@ -476,10 +472,6 @@ class DeleteGatewayPortVlan(extension.ClientExtensionDelete,
 
     def get_parser(self, prog_name):
         parser = super(DeleteGatewayPortVlan, self).get_parser(prog_name)
-        # parser.add_argument(
-        #     'id',
-        #     help=_('ID of the gateway interface or vlan value(0-4094) when '
-        #            'used with --gatewayport or --gateway and --gatewayport '))
         parser.add_argument(
             '--gateway', metavar='GATEWAY',
             help=_('Name or ID of the gateway'))
@@ -517,10 +509,6 @@ class AssignGatewayPortVlan(extension.ClientExtensionUpdate,
 
     def get_parser(self, prog_name):
         parser = super(AssignGatewayPortVlan, self).get_parser(prog_name)
-        # parser.add_argument(
-        #     'id',
-        #     help=_('ID of the gateway interface or vlan value(0-4094) when '
-        #            'used with --gatewayport or --gateway and --gatewayport '))
         parser.add_argument(
             'tenant_id', metavar='TENANT_ID',
             help=_('The owner tenant ID.'), )
@@ -566,10 +554,6 @@ class UnassignGatewayPortVlan(extension.ClientExtensionUpdate,
 
     def get_parser(self, prog_name):
         parser = super(UnassignGatewayPortVlan, self).get_parser(prog_name)
-        # parser.add_argument(
-        #     'id',
-        #     help=_('ID of the gateway interface or vlan value(0-4094) when '
-        #            'used with --gatewayport or --gateway and --gatewayport '))
         parser.add_argument(
             'tenant_id', metavar='TENANT_ID',
             help=_('The owner tenant ID.'), )
@@ -600,7 +584,7 @@ class UnassignGatewayPortVlan(extension.ClientExtensionUpdate,
                   file=self.app.stdout)
         else:
             neutron_client.update_nuage_gateway_vlan(parsed_args.id,
-                                                       body)
+                                                     body)
             print((_('Unassigned %(resource)s %(res_id)s from tenant '
                      '%(tenant)s')
                    % {'res_id': res_id,

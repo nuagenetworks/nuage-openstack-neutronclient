@@ -15,6 +15,7 @@
 
 from neutronclient.common import extension
 
+
 class NetPartition(extension.NeutronClientExtension):
     resource = 'net_partition'
     resource_plural = '%ss' % resource
@@ -22,11 +23,13 @@ class NetPartition(extension.NeutronClientExtension):
     resource_path = '/%s/%%s' % 'net-partitions'
     versions = ['2.0']
 
+
 class NetPartitionList(extension.ClientExtensionList, NetPartition):
     """List netpartitions that belong to a given tenant."""
 
     shell_command = 'nuage-netpartition-list'
     list_columns = ['id', 'name']
+
 
 class NetPartitionCreate(extension.ClientExtensionCreate, NetPartition):
     """Create a netpartition for a given tenant."""
@@ -41,6 +44,7 @@ class NetPartitionCreate(extension.ClientExtensionCreate, NetPartition):
     def args2body(self, parsed_args):
         body = {'net_partition': {'name': parsed_args.name}, }
         return body
+
 
 class NetPartitionDelete(extension.ClientExtensionDelete, NetPartition):
     """Delete a given netpartition."""
