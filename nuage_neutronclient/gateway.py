@@ -614,7 +614,7 @@ class CreateGatewayVPort(extension.ClientExtensionCreate, GatewayVPort):
             '--subnet', metavar='SUBNET',
             help=_('ID of the subnet'))
         parser.add_argument(
-            '--port', metavar='SUBNET',
+            '--port', metavar='PORT',
             help=_('ID of the port'))
 
     def args2body(self, parsed_args):
