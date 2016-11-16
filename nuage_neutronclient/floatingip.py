@@ -12,9 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import warnings
+
 from neutronclient.common import extension
 from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
+from neutronclient.neutron.v2_0 import floatingip
 
 
 class UpdateFloatingIP(extension.ClientExtensionUpdate):
@@ -48,9 +51,55 @@ class UpdateFloatingIP(extension.ClientExtensionUpdate):
                    'Can be -1 for unlimited.'))
 
     def args2body(self, parsed_args):
+        if parsed_args.nuage_fip_rate is not None:
+            warnings.simplefilter('once', category=DeprecationWarning)
+            warnings.warn(
+                'Setting nuage_fip_rate (in Mbps) is deprecated '
+                'in favor of passing --nuage-egress-fip-rate-kbps',
+                DeprecationWarning)
         body = {self.resource: {}}
         updateables = ['port_id', 'fixed_ip_address', 'nuage_fip_rate',
                        'nuage_ingress_fip_rate_kbps',
                        'nuage_egress_fip_rate_kbps']
         neutronV20.update_dict(parsed_args, body[self.resource], updateables)
+        return body
+
+
+class CreateFloatingIP(extension.ClientExtensionCreate,
+                       floatingip.CreateFloatingIP):
+    """Create floating IP."""
+    resource = 'floatingip'
+    shell_command = '%s-create' % resource
+    resource_path = '/floatingips/'
+    object_path = '/floatingips'
+
+    def add_known_arguments(self, parser):
+        super(CreateFloatingIP, self).add_known_arguments(parser)
+        parser.add_argument(
+            '--nuage-fip-rate',
+            help=_('DEPRECATED: Use --nuage-egress-fip-rate-kbps. '
+                   'Rate limiting applied to the floating IP. '
+                   'Can be -1 for unlimited.'))
+        parser.add_argument(
+            '--nuage-ingress-fip-rate-kbps',
+            help=_('Rate limiting applied to the floating IP in kbps and'
+                   ' ingress direction. '
+                   'Can be -1 for unlimited.'))
+        parser.add_argument(
+            '--nuage-egress-fip-rate-kbps',
+            help=_('Rate limiting applied to the floating IP in kbps and '
+                   'egress direction. '
+                   'Can be -1 for unlimited.'))
+
+    def args2body(self, parsed_args):
+        body = super(CreateFloatingIP, self).args2body(parsed_args)
+        if parsed_args.nuage_fip_rate is not None:
+            warnings.simplefilter('once', category=DeprecationWarning)
+            warnings.warn(
+                'Setting nuage_fip_rate (in Mbps) is deprecated '
+                'in favor of passing --nuage-egress-fip-rate-kbps',
+                DeprecationWarning)
+        options = ['nuage_fip_rate', 'nuage_ingress_fip_rate_kbps',
+                   'nuage_egress_fip_rate_kbps']
+        neutronV20.update_dict(parsed_args, body[self.resource], options)
         return body
