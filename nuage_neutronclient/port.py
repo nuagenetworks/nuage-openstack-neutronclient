@@ -31,7 +31,7 @@ def _add_known_arguments(parser):
         help=_('IDs or names of the policy groups to attach to this port.'))
     parser.add_argument(
         '--nuage-redirect-targets',
-        help=_('IDs or names of the redirect targets to assign to this port.'))
+        help=_('ID or name of the redirect target to assign to this port.'))
 
 
 def _args2body(port, parsed_args):
@@ -40,7 +40,7 @@ def _args2body(port, parsed_args):
     if parsed_args.nuage_policy_groups:
         port['nuage_policy_groups'] = parsed_args.nuage_policy_groups
     if parsed_args.nuage_redirect_targets:
-        port['nuage_redirect_targets'] = parsed_args.nuage_redirect_targets
+        port['nuage_redirect_targets'] = parsed_args.nuage_redirect_target
 
 
 def handle_pg_names(neutron_client, parsed_args):
@@ -119,6 +119,10 @@ class UpdatePort(extension.ClientExtensionUpdate,
             '--no-nuage-policy-groups',
             action='store_true',
             help=_('Disassociate the policy groups on VSD.'))
+        parser.add_argument(
+            '--no-nuage-redirect-targets',
+            action='store_true',
+            help=_('Disassociate the redirect target on VSD.'))
         _add_known_arguments(parser)
 
     def args2body(self, parsed_args):
@@ -138,4 +142,6 @@ class UpdatePort(extension.ClientExtensionUpdate,
             port['nuage_floatingip'] = None
         if parsed_args.no_nuage_policy_groups:
             port['nuage_policy_groups'] = []
+        if parsed_args.no_nuage_redirect_targets:
+            port['nuage_redirect_targets'] = []
         return body
