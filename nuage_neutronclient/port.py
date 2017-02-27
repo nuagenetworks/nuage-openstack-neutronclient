@@ -14,12 +14,12 @@
 
 from neutronclient.common import exceptions
 from neutronclient.common import extension
-from neutronclient.common.utils import is_valid_cidr
 from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
 from neutronclient.neutron.v2_0 import port
 from nuage_neutronclient import nuage_floatingip
 from nuage_neutronclient import nuage_policy_group
+from oslo_utils import netutils
 
 
 def _add_known_arguments(parser):
@@ -94,7 +94,7 @@ class CreatePort(extension.ClientExtensionCreate,
         body = super(CreatePort, self).args2body(parsed_args)
         neutron_client = self.get_client()
 
-        if is_valid_cidr(parsed_args.nuage_floatingip):
+        if netutils.is_valid_cidr(parsed_args.nuage_floatingip):
             handle_fip_ips(neutron_client, parsed_args)
         if parsed_args.nuage_policy_groups:
             handle_pg_names(neutron_client, parsed_args)
@@ -127,7 +127,7 @@ class UpdatePort(extension.ClientExtensionUpdate,
         parsed_args.id = neutronV20.find_resourceid_by_name_or_id(
             neutron_client, self.resource, parsed_args.id)
 
-        if is_valid_cidr(parsed_args.nuage_floatingip):
+        if netutils.is_valid_cidr(parsed_args.nuage_floatingip):
             handle_fip_ips(neutron_client, parsed_args)
         if parsed_args.nuage_policy_groups:
             handle_pg_names(neutron_client, parsed_args)
