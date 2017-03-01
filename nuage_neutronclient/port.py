@@ -31,7 +31,8 @@ def _add_known_arguments(parser):
         help=_('IDs or names of the policy groups to attach to this port.'))
     parser.add_argument(
         '--nuage-redirect-targets',
-        help=_('ID or name of the redirect target to assign to this port.'))
+        help=_('ID(s) or name(s) of the redirect target(s)'
+               ' to assign to this port.'))
 
 
 def _args2body(port, parsed_args):
@@ -40,7 +41,7 @@ def _args2body(port, parsed_args):
     if parsed_args.nuage_policy_groups:
         port['nuage_policy_groups'] = parsed_args.nuage_policy_groups
     if parsed_args.nuage_redirect_targets:
-        port['nuage_redirect_targets'] = parsed_args.nuage_redirect_target
+        port['nuage_redirect_targets'] = parsed_args.nuage_redirect_targets
 
 
 def handle_pg_names(neutron_client, parsed_args):
