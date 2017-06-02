@@ -13,10 +13,11 @@
 #    under the License.
 
 from neutronclient.common import extension
-from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
 from neutronclient.neutron.v2_0 import port
 from neutronclient.neutron.v2_0 import subnet
+
+from nuage_neutronclient._i18n import _
 
 
 class NuageFloatingIp(extension.NeutronClientExtension):

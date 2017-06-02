@@ -16,8 +16,9 @@ from __future__ import print_function
 
 from neutronclient.common import exceptions
 from neutronclient.common import extension
-from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
+
+from nuage_neutronclient._i18n import _
 
 
 class ExternalSecurityGroup(extension.NeutronClientExtension):

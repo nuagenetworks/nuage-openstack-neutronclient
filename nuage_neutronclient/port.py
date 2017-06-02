@@ -14,12 +14,13 @@
 
 from neutronclient.common import exceptions
 from neutronclient.common import extension
-from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
 from neutronclient.neutron.v2_0 import port
 from nuage_neutronclient import nuage_floatingip
 from nuage_neutronclient import nuage_policy_group
 from oslo_utils import netutils
+
+from nuage_neutronclient._i18n import _
 
 
 def _add_known_arguments(parser):

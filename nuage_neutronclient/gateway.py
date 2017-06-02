@@ -25,8 +25,9 @@ import six
 from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.common import utils
-from neutronclient.i18n import _
 from neutronclient.neutron import v2_0 as neutronV20
+
+from nuage_neutronclient._i18n import _
 
 
 GW_RESOURCE = 'nuage_gateway'
