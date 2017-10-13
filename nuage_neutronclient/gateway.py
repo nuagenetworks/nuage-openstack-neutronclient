@@ -47,11 +47,11 @@ def check_vlan_value(value):
         vlan_val = int(value)
     except ValueError:
         message = (_('Vlan value should be a valid integer '
-                     'in 0-4094 range'))
+                     'in 0-4095 range'))
         raise exceptions.CommandError(message=message)
 
-    if vlan_val not in range(0, 4095):
-        message = (_('Vlan value should be in 0-4094 range'))
+    if vlan_val not in range(0, 4096):
+        message = (_('Vlan value should be in 0-4095 range'))
         raise exceptions.CommandError(message=message)
 
     return vlan_val
@@ -416,7 +416,7 @@ class CreateGatewayPortVlan(extension.ClientExtensionCreate,
     def add_known_arguments(self, parser):
         parser.add_argument(
             'id', metavar='VLAN_VALUE', type=check_vlan_value,
-            help=_('Vlan value in 0-4094 range'))
+            help=_('Vlan value in 0-4095 range'))
         parser.add_argument(
             '--gateway', metavar='GATEWAY',
             help=_('Name or ID of the gateway'))
