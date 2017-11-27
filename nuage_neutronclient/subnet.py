@@ -37,7 +37,8 @@ class CreateSubnet(extension.ClientExtensionCreate,
             help=_('ID of the shared resource zone on the VSD.'))
         utils.add_boolean_argument(
             parser, '--underlay',
-            help=_('Whether to enable or disable underlay'))
+            help=_('Whether to enable or disable underlay for shared '
+                   'networks'))
 
     def args2body(self, parsed_args):
         body = super(CreateSubnet, self).args2body(parsed_args)
@@ -50,4 +51,23 @@ class CreateSubnet(extension.ClientExtensionCreate,
         neutronV20.update_dict(parsed_args, body['subnet'],
                                ['net_partition', 'nuagenet', 'nuage_uplink',
                                 'underlay'])
+        return body
+
+
+class UpdateSubnet(extension.ClientExtensionUpdate,
+                   subnet.UpdateSubnet):
+    shell_command = 'subnet-update'
+    resource_path = '/subnets/%s'
+
+    def add_known_arguments(self, parser):
+        super(UpdateSubnet, self).add_known_arguments(parser)
+        parser.add_argument(
+            '--nuage-underlay',
+            type=utils.convert_to_lowercase,
+            choices=['off', 'route', 'snat', 'inherited'],
+            help=_('Enable nuage underlay options.'))
+
+    def args2body(self, parsed_args):
+        body = super(UpdateSubnet, self).args2body(parsed_args)
+        body['subnet']['nuage_underlay'] = parsed_args.nuage_underlay
         return body
