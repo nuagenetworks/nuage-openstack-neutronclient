@@ -44,14 +44,18 @@ def _args2body(port, parsed_args):
         port['nuage_redirect_targets'] = parsed_args.nuage_redirect_targets
 
 
-def handle_pg_names(neutron_client, parsed_args):
+def handle_pg_names(neutron_client, parsed_args, during_create=False):
     policy_groups = parsed_args.nuage_policy_groups
     pg_ids = []
     for pg in policy_groups:
-        policy_groups = neutron_client.list_nuage_policy_groups(
-            for_port=parsed_args.id,
-            name=pg
-        )[nuage_policy_group.NuagePolicyGroup.resource_plural]
+        if during_create:
+            policy_groups = neutron_client.list_nuage_policy_groups(
+                name=pg)[nuage_policy_group.NuagePolicyGroup.resource_plural]
+        else:
+            policy_groups = neutron_client.list_nuage_policy_groups(
+                for_port=parsed_args.id,
+                name=pg
+            )[nuage_policy_group.NuagePolicyGroup.resource_plural]
         if len(policy_groups) == 1:
             pg_ids.append(policy_groups[0]['id'])
         elif len(policy_groups) > 1:
@@ -98,7 +102,8 @@ class CreatePort(extension.ClientExtensionCreate,
         if netutils.is_valid_cidr(parsed_args.nuage_floatingip):
             handle_fip_ips(neutron_client, parsed_args)
         if parsed_args.nuage_policy_groups:
-            handle_pg_names(neutron_client, parsed_args)
+            handle_pg_names(neutron_client, parsed_args,
+                            during_create=True)
 
         port = body['port']
         _args2body(port, parsed_args)
