@@ -471,36 +471,6 @@ class DeleteGatewayPortVlan(extension.ClientExtensionDelete,
 
     shell_command = 'nuage-gateway-vlan-delete'
 
-    def get_parser(self, prog_name):
-        parser = super(DeleteGatewayPortVlan, self).get_parser(prog_name)
-        parser.add_argument(
-            '--gateway', metavar='GATEWAY',
-            help=_('Name or ID of the gateway'))
-        parser.add_argument(
-            '--gatewayport', metavar='GATEWAYPORT',
-            help=_('Name or ID of the gatewayport'))
-        return parser
-
-    def run(self, parsed_args):
-        self.log.debug('run(%s)' % parsed_args)
-        neutron_client = self.get_client()
-        neutron_client.format = parsed_args.request_format
-        res_id = get_gatway_info(parsed_args, neutron_client)
-        obj_deleter = getattr(neutron_client, "delete_%s" % self.resource)
-        match = re.match(UUID_PATTERN, str(res_id))
-        if match:
-            obj_deleter(res_id)
-            print((_('Deleted %(resource)s with value %(res_id)s')
-                   % {'res_id': parsed_args.id,
-                      'resource': self.resource}),
-                  file=self.app.stdout)
-        else:
-            obj_deleter(parsed_args.id)
-            print((_('Deleted %(resource)s with value %(res_id)s')
-                   % {'res_id': res_id,
-                      'resource': self.resource}),
-                  file=self.app.stdout)
-
 
 class AssignGatewayPortVlan(extension.ClientExtensionUpdate,
                             GatewayPortVlan):
