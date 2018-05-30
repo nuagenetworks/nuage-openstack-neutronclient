@@ -24,6 +24,9 @@ class CreateRouter(extension.ClientExtensionCreate, router.CreateRouter):
     def add_known_arguments(self, parser):
         super(CreateRouter, self).add_known_arguments(parser)
         parser.add_argument(
+            '--net-partition',
+            help=_('ID or name of the net-partition.'))
+        parser.add_argument(
             '--nuage-underlay',
             type=utils.convert_to_lowercase,
             choices=['off', 'route', 'snat'],
@@ -31,6 +34,7 @@ class CreateRouter(extension.ClientExtensionCreate, router.CreateRouter):
 
     def args2body(self, parsed_args):
         body = super(CreateRouter, self).args2body(parsed_args)
+        body['router']['net_partition'] = parsed_args.net_partition
         body['router']['nuage_underlay'] = parsed_args.nuage_underlay
         return body
 

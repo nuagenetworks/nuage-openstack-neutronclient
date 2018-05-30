@@ -28,7 +28,7 @@ class CreateSubnet(extension.ClientExtensionCreate,
         super(CreateSubnet, self).add_known_arguments(parser)
         parser.add_argument(
             '--net-partition',
-            help=_('ID or name of the net partition.'))
+            help=_('ID or name of the net-partition.'))
         parser.add_argument(
             '--nuagenet',
             help=_('ID of the subnet or l2domain on the VSD.'))
