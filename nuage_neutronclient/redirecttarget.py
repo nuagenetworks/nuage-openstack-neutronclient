@@ -164,9 +164,11 @@ class CreateRedirectTargetVip(extension.ClientExtensionCreate,
             help=('ID or name of redirecttarget to add vip to.'))
 
     def args2body(self, parsed_args):
-        body = {'nuage_redirect_target_vip': {
-            'virtual_ip_address': parsed_args.virtual_ip_address,
-            }}
+        body = {
+            'nuage_redirect_target_vip': {
+                'virtual_ip_address': parsed_args.virtual_ip_address,
+            }
+        }
         _subnet_id = neutronV20.find_resourceid_by_name_or_id(
             self.get_client(), 'subnet', parsed_args.subnet)
         body['nuage_redirect_target_vip'].update(
