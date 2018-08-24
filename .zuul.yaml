@@ -11,6 +11,7 @@
               - ^doc/.*$
               - ^setup.cfg$
               - ^tox.ini$
+        - openstackclient-test-dsvm-functional
     gate:
       jobs:
         - openstack-tox-pep8
@@ -23,3 +24,17 @@
               - ^doc/.*$
               - ^setup.cfg$
               - ^tox.ini$
+- job:
+    name: openstackclient-test-dsvm-functional
+    parent: legacy-dsvm-base
+    run: playbooks/run.yaml
+    post-run: playbooks/post.yaml
+    timeout: 9000
+    required-projects:
+      - OpenStack/nuage-openstack-neutron
+      - OpenStack/nuage-openstack-neutronclient
+      - openstack/devstack-gate
+      - openstack/neutron
+      - openstack/python-openstackclient
+      - openstack/placement
+
