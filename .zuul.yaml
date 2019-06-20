@@ -24,6 +24,11 @@
               - ^doc/.*$
               - ^setup.cfg$
               - ^tox.ini$
+        - openstackclient-test-dsvm-functional
+    periodic:
+      jobs:
+        - openstackclient-test-dsvm-functional
+
 - job:
     name: openstackclient-test-dsvm-functional
     parent: legacy-dsvm-base
