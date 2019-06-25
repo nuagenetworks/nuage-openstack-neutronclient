@@ -88,6 +88,20 @@ class NuageRouterTests(RouterTests):
                          observed=cmd_output)
 
         # Set Nuage arguments and verify using router show
+        # a. update a property and check that the other ones did not change
+        args_for_set = {'nuage_ecmp_count': 4}
+        cmd_set = ('router set {args} {router}'
+                   .format(args=self._build_arg_str(args_for_set),
+                           router=router_name))
+        cmd_output = self.openstack(cmd_set)
+        self.assertEqual(expected='', observed=cmd_output)
+
+        cmd_show = 'router show -f json {}'.format(router_name)
+        cmd_output = json.loads(self.openstack(cmd_show))
+        self._verify(expected=dict(args_for_create, **args_for_set),
+                     observed=cmd_output)
+
+        # b. update all properties
         args_for_set = {
             'nuage_rd': self._random_target(),
             'nuage_rt': self._random_target(),
