@@ -67,7 +67,6 @@ def add_create_update_attributes(parser):
     parser.add_argument(
         '--nuage-tunnel-type',
         choices=['VXLAN', 'GRE', 'DEFAULT'],
-        default='DEFAULT',
         help=_('Nuage tunnel type'))
 
     parser.add_argument(
