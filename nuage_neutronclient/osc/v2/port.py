@@ -336,7 +336,7 @@ class SetPort(port.SetPort):
         if parsed_args.no_nuage_policy_groups:
             # overwrite the existing Nuage policygroups
             attrs['nuage_policy_groups'] = []
-        else:
+        elif parsed_args.nuage_policy_group:
             # start from the existing policygroups
             attrs['nuage_policy_groups'] = list(
                 get_nuage_policygroups(nuageclient, port.id))

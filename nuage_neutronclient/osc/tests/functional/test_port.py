@@ -293,3 +293,26 @@ class NuagePortTestsVSDManaged(PortTests):
 
         # delete and verify
         utils.delete_and_verify(self, 'port', port_name)
+
+    def test_port_no_vport(self):
+        port_name = utils.get_random_name()
+        cmd_create = ('port create -f json --vnic-type=direct '
+                      '--network {network} {name}'
+                      .format(network=self.NETWORK_NAME, name=port_name))
+        cmd_output = json.loads(self.openstack(cmd_create))
+        self.assertEqual(expected='direct',
+                         observed=cmd_output['binding_vnic_type'])
+
+        new_port_name = utils.get_random_name()
+        cmd_update = ('port set --name {} {}'.format(new_port_name, port_name))
+        cmd_output = self.openstack(cmd_update)
+        self.assertEqual(expected='', observed=cmd_output)
+
+        cmd_output = self._port_show(new_port_name)
+        self.assertEqual(expected='direct',
+                         observed=cmd_output['binding_vnic_type'])
+        self.assertEqual(expected=new_port_name,
+                         observed=cmd_output['name'])
+
+        # delete and verify
+        utils.delete_and_verify(self, 'port', new_port_name)
