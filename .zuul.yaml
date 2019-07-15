@@ -11,7 +11,7 @@
               - ^doc/.*$
               - ^setup.cfg$
               - ^tox.ini$
-        - openstackclient-test-dsvm-functional
+        - nuage-neutronclient-osc-tests-functional
     gate:
       jobs:
         - openstack-tox-pep8
@@ -24,13 +24,13 @@
               - ^doc/.*$
               - ^setup.cfg$
               - ^tox.ini$
-        - openstackclient-test-dsvm-functional
+        - nuage-neutronclient-osc-tests-functional
     periodic:
       jobs:
-        - openstackclient-test-dsvm-functional
+        - nuage-neutronclient-osc-tests-functional
 
 - job:
-    name: openstackclient-test-dsvm-functional
+    name: nuage-neutronclient-osc-tests-functional
     parent: legacy-dsvm-base
     run: playbooks/run.yaml
     post-run: playbooks/post.yaml
