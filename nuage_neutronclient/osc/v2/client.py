@@ -26,6 +26,8 @@ class Client(client.ClientBase):
     nuage_floatingips_path = "/nuage_floatingips"
     nuage_redirect_targets_path = "/nuage_redirect_targets"
     nuage_vsd_resource = "/vsd_domains"
+    nuage_netpartition_path = "/net_partitions/{id}"
+    nuage_netpartitions_path = "/net_partitions"
 
     # API has no way to report plurals, so we have to hard code them
     EXTED_PLURALS = {'nuage_l2bridges': 'nuage_l2bridge',
@@ -46,26 +48,39 @@ class Client(client.ClientBase):
         return self.put(path, **kwargs)
 
     def show_nuage_l2bridge(self, l2bridge, **_params):
-        """Fetches information of a certain nuage_l2bridge."""
         return self.get(self.nuage_l2bridge_path.format(id=l2bridge),
                         params=_params)
 
     def list_nuage_l2bridges(self, **_params):
-        """Fetch a list of all nuage_l2bridges."""
         return self.get(self.nuage_l2bridges_path, params=_params)
 
     def create_nuage_l2bridge(self, body):
-        """Creates a new nuage_l2bridge"""
         return self.post(self.nuage_l2bridges_path, body=body)
 
     def update_nuage_l2bridge(self, l2bridge, body=None, revision_number=None):
-        """Updates a nuage l2bridge."""
         return self._update_resource(
             self.nuage_l2bridge_path.format(id=l2bridge),
             body=body, revision_number=revision_number)
 
     def delete_nuage_l2bridge(self, l2bridge_id):
         return self.delete(self.nuage_l2bridge_path.format(id=l2bridge_id))
+
+    def create_net_partition(self, name):
+        net_partition = {'net_partition': {'name': name}}
+        return self.post(self.nuage_netpartitions_path, body=net_partition)
+
+    def find_net_partition(self, name_or_id):
+        return self.find_resource(resource='net_partition',
+                                  name_or_id=name_or_id)
+
+    def show_net_partition(self, id):
+        return self.get(self.nuage_netpartition_path.format(id=id))
+
+    def delete_net_partition(self, id):
+        return self.delete(self.nuage_netpartition_path.format(id=id))
+
+    def list_net_partitions(self, **params):
+        return self.get(self.nuage_netpartitions_path, params=params)
 
     def list_nuage_policy_groups(self, **_params):
         return self.get(self.nuage_policy_groups_path, params=_params)
