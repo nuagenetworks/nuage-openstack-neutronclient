@@ -15,7 +15,7 @@
 import json
 
 from openstackclient.tests.functional import base
-from vspk import v5_0 as vspk
+from vspk import v6 as vspk
 
 import nuage_neutronclient.osc.tests.utils as utils
 
