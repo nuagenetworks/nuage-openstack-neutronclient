@@ -17,7 +17,7 @@ import random
 
 from openstackclient.tests.functional.network.v2.test_port import PortTests
 from osc_lib import utils as osc_utils
-from vspk import v5_0 as vspk
+from vspk import v6 as vspk
 
 import nuage_neutronclient.osc.tests.utils as utils
 

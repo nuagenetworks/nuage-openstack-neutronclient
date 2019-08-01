@@ -28,6 +28,10 @@ class Client(client.ClientBase):
     nuage_vsd_resource = "/vsd_domains"
     nuage_netpartition_path = "/net_partitions/{id}"
     nuage_netpartitions_path = "/net_partitions"
+    nuage_switchport_mappings_path = "/net-topology/switchport_mappings"
+    nuage_switchport_mapping_path = "/net-topology/switchport_mappings/{id}"
+    nuage_switchport_bindings_path = "/net-topology/switchport_bindings"
+    nuage_switchport_binding_path = "/net-topology/switchport_bindings/{id}"
 
     # API has no way to report plurals, so we have to hard code them
     EXTED_PLURALS = {'nuage_l2bridges': 'nuage_l2bridge',
@@ -64,6 +68,34 @@ class Client(client.ClientBase):
 
     def delete_nuage_l2bridge(self, l2bridge_id):
         return self.delete(self.nuage_l2bridge_path.format(id=l2bridge_id))
+
+    def create_switchport_mapping(self, body):
+        return self.post(self.nuage_switchport_mappings_path, body=body)
+
+    def delete_switchport_mapping(self, switchport_mapping_id):
+        return self.delete(
+            self.nuage_switchport_mapping_path.format(
+                id=switchport_mapping_id))
+
+    def list_switchport_mappings(self, **_params):
+        return self.get(self.nuage_switchport_mappings_path, params=_params)
+
+    def show_switchport_mapping(self, id, **_params):
+        return self.get(self.nuage_switchport_mapping_path.format(id=id),
+                        params=_params)
+
+    def list_switchport_bindings(self, **_params):
+        return self.get(self.nuage_switchport_bindings_path, params=_params)
+
+    def show_switchport_binding(self, id, **_params):
+        return self.get(self.nuage_switchport_binding_path.format(id=id),
+                        params=_params)
+
+    def update_switchport_mapping(self, switchport_id, body=None,
+                                  revision_number=None):
+        return self._update_resource(
+            self.nuage_switchport_mapping_path.format(id=switchport_id),
+            body=body, revision_number=revision_number)
 
     def create_net_partition(self, name):
         net_partition = {'net_partition': {'name': name}}
