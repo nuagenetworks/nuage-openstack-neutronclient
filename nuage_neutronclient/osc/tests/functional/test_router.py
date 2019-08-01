@@ -19,7 +19,7 @@ import random
 import testtools
 
 from nuage_neutronclient.osc.tests import utils
-from vspk import v5_0 as vspk
+from vspk import v6 as vspk
 
 from openstackclient.tests.functional.network.v2.test_router \
     import RouterTests
