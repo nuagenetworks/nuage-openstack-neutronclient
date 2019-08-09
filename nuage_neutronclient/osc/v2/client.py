@@ -19,19 +19,20 @@ from neutronclient.v2_0 import client
 
 class Client(client.ClientBase):
 
-    nuage_l2bridge_path = "/nuage_l2bridges/{id}"
-    nuage_l2bridges_path = "/nuage_l2bridges"
-    nuage_policy_groups_path = "/nuage_policy_groups"
     nuage_floatingip_path = "/nuage_floatingips/{id}"
     nuage_floatingips_path = "/nuage_floatingips"
-    nuage_redirect_targets_path = "/nuage_redirect_targets"
-    nuage_vsd_resource = "/vsd_domains"
+    nuage_l2bridge_path = "/nuage_l2bridges/{id}"
+    nuage_l2bridges_path = "/nuage_l2bridges"
     nuage_netpartition_path = "/net_partitions/{id}"
     nuage_netpartitions_path = "/net_partitions"
-    nuage_switchport_mappings_path = "/net-topology/switchport_mappings"
-    nuage_switchport_mapping_path = "/net-topology/switchport_mappings/{id}"
-    nuage_switchport_bindings_path = "/net-topology/switchport_bindings"
+    nuage_policy_group_path = "/nuage_policy_groups/{id}"
+    nuage_policy_groups_path = "/nuage_policy_groups"
+    nuage_redirect_targets_path = "/nuage_redirect_targets"
     nuage_switchport_binding_path = "/net-topology/switchport_bindings/{id}"
+    nuage_switchport_bindings_path = "/net-topology/switchport_bindings"
+    nuage_switchport_mapping_path = "/net-topology/switchport_mappings/{id}"
+    nuage_switchport_mappings_path = "/net-topology/switchport_mappings"
+    nuage_vsd_resource = "/vsd_domains"
 
     # API has no way to report plurals, so we have to hard code them
     EXTED_PLURALS = {'nuage_l2bridges': 'nuage_l2bridge',
@@ -116,6 +117,9 @@ class Client(client.ClientBase):
 
     def list_nuage_policy_groups(self, **_params):
         return self.get(self.nuage_policy_groups_path, params=_params)
+
+    def show_nuage_policy_group(self, id):
+        return self.get(self.nuage_policy_group_path.format(id=id))
 
     def list_nuage_floatingips(self, **_params):
         return self.get(self.nuage_floatingips_path, params=_params)
