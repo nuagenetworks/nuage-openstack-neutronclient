@@ -11,7 +11,6 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-from neutronclient.common import exceptions
 from neutronclient.common import extension
 from neutronclient.common import utils
 from neutronclient.neutron import v2_0 as neutronV20
@@ -43,12 +42,6 @@ class CreateSubnet(extension.ClientExtensionCreate,
 
     def args2body(self, parsed_args):
         body = super(CreateSubnet, self).args2body(parsed_args)
-        if ((parsed_args.nuagenet is not None) and
-                (parsed_args.net_partition is None)):
-            msg = _("'nuagenet' and 'net_partition' parameters should both be "
-                    "given for creating a vsd-managed subnet.")
-            raise exceptions.NeutronClientException(message=msg,
-                                                    status_code=400)
         neutronV20.update_dict(parsed_args, body['subnet'],
                                ['net_partition', 'nuagenet', 'nuage_uplink',
                                 'underlay'])
