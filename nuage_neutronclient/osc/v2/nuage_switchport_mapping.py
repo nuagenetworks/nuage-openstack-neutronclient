@@ -24,8 +24,8 @@ from nuage_neutronclient.osc.v2.utils import update_dict
 
 LOG = logging.getLogger(__name__)
 
-RESOUCE_NAME = 'switchport_mapping'
-RESOUCE_NAME_PLURAL = 'switchport_mappings'
+RESOURCE_NAME = 'switchport_mapping'
+RESOURCE_NAME_PLURAL = 'switchport_mappings'
 
 
 _attr_map = (('id', 'ID', column_util.LIST_BOTH),
@@ -65,8 +65,8 @@ def add_arguments_for_create_update(parser, is_create):
 
 
 def get_body_update_create(parsed_args):
-    body = {RESOUCE_NAME: {}}
-    update_dict(parsed_args, body[RESOUCE_NAME],
+    body = {RESOURCE_NAME: {}}
+    update_dict(parsed_args, body[RESOURCE_NAME],
                 ('switch_id', 'switch_info', 'port_id',
                  'host_id', 'pci_slot'))
     return body
@@ -85,7 +85,7 @@ class CreateNuageSwitchportMapping(command.ShowOne):
         client = self.app.client_manager.nuageclient
 
         body = get_body_update_create(parsed_args)
-        item = client.create_switchport_mapping(body)[RESOUCE_NAME]
+        item = client.create_switchport_mapping(body)[RESOURCE_NAME]
 
         column_getter = sdk_utils.get_osc_show_columns_for_sdk_resource
         osc_column_map = {k: v for v, k, _ in _attr_map}
@@ -133,7 +133,7 @@ class ListNuageSwitchportMapping(command.Lister):
     def take_action(self, _):
         client = self.app.client_manager.nuageclient
 
-        items = client.list_switchport_mappings()[RESOUCE_NAME_PLURAL]
+        items = client.list_switchport_mappings()[RESOURCE_NAME_PLURAL]
 
         headers, columns = column_util.get_column_definitions(
             _attr_map, long_listing=True)
@@ -160,7 +160,7 @@ class ShowNuageSwitchportMapping(command.ShowOne):
 
         client = self.app.client_manager.nuageclient
         item = client.show_switchport_mapping(
-            parsed_args.nuage_switchport_mapping)[RESOUCE_NAME]
+            parsed_args.nuage_switchport_mapping)[RESOURCE_NAME]
 
         column_getter = sdk_utils.get_osc_show_columns_for_sdk_resource
         osc_column_map = {k: v for v, k, _ in _attr_map}
@@ -185,7 +185,7 @@ class SetNuageSwitchportMapping(command.Command):
 
     def take_action(self, parsed_args):
         client = self.app.client_manager.nuageclient
-        obj = client.find_resource_by_id(RESOUCE_NAME,
+        obj = client.find_resource_by_id(RESOURCE_NAME,
                                          parsed_args.nuage_switchport_mapping)
 
         changed_attrs = get_body_update_create(parsed_args)
