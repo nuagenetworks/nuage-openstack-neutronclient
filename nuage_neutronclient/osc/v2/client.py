@@ -27,6 +27,11 @@ class Client(client.ClientBase):
     nuage_netpartitions_path = "/net_partitions"
     nuage_policy_group_path = "/nuage_policy_groups/{id}"
     nuage_policy_groups_path = "/nuage_policy_groups"
+    nuage_project_netpartition_mapping_path = (
+        "/project_net_partition_mappings/{id}")
+    nuage_project_netpartition_mappings_path = (
+        "/project_net_partition_mappings")
+
     nuage_redirect_targets_path = "/nuage_redirect_targets"
     nuage_switchport_binding_path = "/net-topology/switchport_bindings/{id}"
     nuage_switchport_bindings_path = "/net-topology/switchport_bindings"
@@ -37,6 +42,8 @@ class Client(client.ClientBase):
     # API has no way to report plurals, so we have to hard code them
     EXTED_PLURALS = {'nuage_l2bridges': 'nuage_l2bridge',
                      'nuage_policy_groups': 'nuage_policy_group',
+                     'nuage_project_netpartition_mapping':
+                         'nuage_project_netpartition_mappings',
                      'nuage_floating_ips': 'nuage_floating_ip',
                      'nuage_redirect_targets': 'nuage_redirect_target',
                      'vsd_domains': 'vsd_domain'}
@@ -114,6 +121,22 @@ class Client(client.ClientBase):
 
     def list_net_partitions(self, **params):
         return self.get(self.nuage_netpartitions_path, params=params)
+
+    def create_project_netpartition_mapping(self, body):
+        return self.post(self.nuage_project_netpartition_mappings_path,
+                         body=body)
+
+    def delete_project_netpartition_mapping(self, id):
+        return self.delete(
+            self.nuage_project_netpartition_mapping_path.format(id=id))
+
+    def list_project_netpartition_mappings(self, **params):
+        return self.get(self.nuage_project_netpartition_mappings_path,
+                        params=params)
+
+    def show_project_netpartition_mapping(self, id):
+        return self.get(
+            self.nuage_project_netpartition_mapping_path.format(id=id))
 
     def list_nuage_policy_groups(self, **_params):
         return self.get(self.nuage_policy_groups_path, params=_params)
