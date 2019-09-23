@@ -33,6 +33,7 @@ class Client(client.ClientBase):
         "/project_net_partition_mappings")
 
     nuage_redirect_targets_path = "/nuage_redirect_targets"
+    nuage_redirect_target_path = "/nuage_redirect_targets/{id}"
     nuage_switchport_binding_path = "/net-topology/switchport_bindings/{id}"
     nuage_switchport_bindings_path = "/net-topology/switchport_bindings"
     nuage_switchport_mapping_path = "/net-topology/switchport_mappings/{id}"
@@ -46,7 +47,8 @@ class Client(client.ClientBase):
                          'nuage_project_netpartition_mappings',
                      'nuage_floating_ips': 'nuage_floating_ip',
                      'nuage_redirect_targets': 'nuage_redirect_target',
-                     'vsd_domains': 'vsd_domain'}
+                     'vsd_domains': 'vsd_domain',
+                     }
 
     def __init__(self, **kwargs):
         """Initialize a new client via the Neutron v2.0 API."""
@@ -153,6 +155,10 @@ class Client(client.ClientBase):
 
     def list_nuage_redirect_targets(self, **_params):
         return self.get(self.nuage_redirect_targets_path, params=_params)
+
+    def show_nuage_redirect_target(self, id, **_params):
+        return self.get(self.nuage_redirect_target_path.format(id=id),
+                        params=_params)
 
     def get_l3domain(self, router_id):
         domains = self.get(self.nuage_vsd_resource,

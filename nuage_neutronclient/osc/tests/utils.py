@@ -17,7 +17,7 @@ import sys
 from uuid import uuid4 as uuid
 
 from six import moves
-from vspk import v5_0 as vspk
+from vspk import v6 as vspk
 
 from openstackclient.tests.functional.base import execute
 
