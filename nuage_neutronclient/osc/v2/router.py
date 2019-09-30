@@ -174,7 +174,7 @@ class ShowRouter(router.ShowRouter):
         self._handle_nuage_specific_attributes(obj)
 
         display_columns, columns = router._get_columns(obj)
-        router._formatters['interfaces_info'] = router._format_router_info
+        router._formatters['interfaces_info'] = router.RouterInfoColumn
         data = osc_lib_utils.get_item_properties(obj, columns,
                                                  formatters=router._formatters)
 
