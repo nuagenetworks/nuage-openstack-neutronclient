@@ -17,6 +17,7 @@ import json
 import netaddr
 from openstackclient.tests.functional import base
 from osc_lib.utils import format_list
+from tempest.lib import exceptions
 
 from vspk import v6 as vspk
 
@@ -33,6 +34,8 @@ class NuagePolicyGroupTests(base.TestCase):
         self.port2 = None
         self.subnet1 = None
         self.subnet2 = None
+        self.l3domain1 = None
+        self.l3domain2 = None
 
     @classmethod
     def setUpClass(cls):
@@ -90,15 +93,15 @@ class NuagePolicyGroupTests(base.TestCase):
 
         network = self._create_network()
 
-        self.subnet1, l3domain1 = self._create_subnet(
+        self.subnet1, self.l3domain1 = self._create_subnet(
             network=network['id'],
             cidr=netaddr.IPNetwork('10.0.0.0/24'))
-        self.subnet2, l3domain2 = self._create_subnet(
+        self.subnet2, self.l3domain2 = self._create_subnet(
             network=network['id'],
             cidr=netaddr.IPNetwork('20.0.0.0/24'))
 
         self.nuage_pg1 = self._create_nuage_pg(
-            l3domain1,
+            self.l3domain1,
             name=utils.get_random_name(),
             type='SOFTWARE',
             description=utils.get_random_name(),
@@ -106,7 +109,7 @@ class NuagePolicyGroupTests(base.TestCase):
             external=True)
 
         self.nuage_pg2 = self._create_nuage_pg(
-            l3domain2,
+            self.l3domain2,
             name=utils.get_random_name(),
             type='SOFTWARE',
             description=utils.get_random_name(),
@@ -165,6 +168,15 @@ class NuagePolicyGroupTests(base.TestCase):
         self.verify_long_form(expected_pg=self.nuage_pg1,
                               observed_pg=cmd_output)
 
+        # Check show for non-existing resource
+        self.assertRaisesRegex(
+            exceptions.CommandFailed,
+            "Unable to find nuage_policy_group with name "
+            "or id '{}'".format('non-existing-PG'),
+            self.openstack,
+            'nuage policy group show {} '
+            '-f json'.format('non-existing-PG'))
+
     def test_list_with_args(self):
         # when specifying --for-subnet or --for-port expect only the pg from
         # the subnet to show up, not the other one we created
@@ -176,7 +188,7 @@ class NuagePolicyGroupTests(base.TestCase):
 
         cmd_output = json.loads(
             self.openstack('nuage policy group list -f json --for-port {}'
-                           .format(self.port2['id'])))
+                           .format(self.port2['name'])))
 
         self.assertEqual(expected=1, observed=len(cmd_output))
 
@@ -194,3 +206,16 @@ class NuagePolicyGroupTests(base.TestCase):
                            .format(self.port2['id'])))
 
         self.assertEqual(expected=1, observed=len(cmd_output))
+
+    def test_with_ports(self):
+        # Assign ports to redirect target
+        vport = self.l3domain2.vports.get_first()
+        self.nuage_pg2.assign([vport], vspk.NUVPort)
+        self.addCleanup(self.nuage_pg2.assign, [], vspk.NUVPort)
+        # check show
+        cmd_output = json.loads(
+            self.openstack('nuage policy group show {} -f json'
+                           .format(self.nuage_pg2.id)))
+        self.verify_long_form(expected_pg=self.nuage_pg2,
+                              observed_pg=cmd_output,
+                              expected_ports=[self.port2['id']])
