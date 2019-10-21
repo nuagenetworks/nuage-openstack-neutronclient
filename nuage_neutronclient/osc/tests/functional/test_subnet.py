@@ -13,6 +13,7 @@
 #    under the License.
 #
 import json
+import random
 
 import tempest.lib.exceptions as exceptions
 
@@ -26,6 +27,40 @@ from openstackclient.tests.functional.network.v2.test_subnet import SubnetTests
 
 
 class NuageSubnetTests(SubnetTests):
+
+    # Overriding upstream method for forcing v6 CIDR's to be /64 ones, as
+    # that is Nuage restriction in 6.0
+    def _subnet_create(self, cmd, name, is_type_ipv4=True):
+        # Try random subnet range for subnet creating
+        # Because we can not determine ahead of time what subnets are already
+        # in use, possibly by another test running in parallel, try 4 times
+        cmd_output = None
+        for i in range(4):
+            # Make a random subnet
+            if is_type_ipv4:
+                subnet = ".".join(map(
+                    str,
+                    (random.randint(0, 223) for _ in range(3))
+                )) + ".0/26"
+            else:
+                subnet = ":".join(map(
+                    str,
+                    (hex(random.randint(0, 65535))[2:] for _ in range(4))
+                )) + "::/64"
+            try:
+                cmd_output = json.loads(self.openstack(
+                    cmd + ' ' + subnet + ' ' +
+                    name
+                ))
+            except Exception:
+                if i == 3:
+                    # raise the exception at the last time
+                    raise
+                pass
+            else:
+                # break and no longer retry if create successfully
+                break
+        return cmd_output
 
     def test_vsd_managed_crud(self):
         session = create_new_vspk_session()
