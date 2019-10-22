@@ -19,10 +19,8 @@ from osc_lib.utils import columns as column_util
 from osc_lib.utils import format_list
 
 from nuage_neutronclient._i18n import _
-from nuage_neutronclient.osc.v2.utils import update_dict
 
 LOG = logging.getLogger(__name__)
-
 
 _formatters = {
     'ports': format_list,
@@ -43,26 +41,37 @@ class ListNuagePolicyGroup(command.Lister):
 
     def get_parser(self, prog_name):
         parser = super(ListNuagePolicyGroup, self).get_parser(prog_name)
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group(required=False)
+        group.add_argument(
             '--for-subnet',
             help=_('ID or name of subnet to find policy_groups for'),
             required=False)
-        parser.add_argument(
+        group.add_argument(
             '--for-port',
             help=_('ID or name of port to find policy_groups for'),
             required=False)
-        parser.add_argument(
+        group.add_argument(
             '--ports', action='append',
-            help=_('ID or name of port(s) which the policy groups are '
+            help=_('ID of port(s) which the policy groups are '
                    'associated with'),
             required=False)
         return parser
 
     def take_action(self, parsed_args):
         client = self.app.client_manager.nuageclient
+        neutronclient = self.app.client_manager.neutronclient
 
         attrs = {}
-        update_dict(parsed_args, attrs, ('for_subnet', 'for_port', 'ports'))
+        if parsed_args.for_subnet:
+            subnet_id = neutronclient.find_resource(
+                'subnet', parsed_args.for_subnet)['id']
+            attrs['for_subnet'] = subnet_id
+        elif parsed_args.for_port:
+            port_id = neutronclient.find_resource(
+                'port', parsed_args.for_port)['id']
+            attrs['for_port'] = port_id
+        elif parsed_args.ports:
+            attrs['ports'] = parsed_args.ports
 
         nuage_policy_groups = (
             client.list_nuage_policy_groups(**attrs)['nuage_policy_groups'])
