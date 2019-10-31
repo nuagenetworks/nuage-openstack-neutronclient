@@ -242,7 +242,7 @@ class NuageSwitchPortTests(base.TestCase):
             port_id=self.gw_port_name, switch_info=self.name)
 
         network_name = utils.get_random_name()
-        self.openstack('network create --mtu 1450 --provider-network-type vlan'
+        self.openstack('network create --mtu 1400 --provider-network-type vlan'
                        ' --provider-physical-network physnet1'
                        ' --provider-segment {vlan} {network}'
                        .format(vlan=vlan, network=network_name))
