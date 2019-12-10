@@ -75,7 +75,8 @@ class NuageRouterTests(RouterTests):
             'nuage_backhaul_rt': self._random_target(),
             'nuage_tunnel_type': 'GRE',
             'nuage_ecmp_count': 3,
-            'nuage_underlay': 'snat'
+            'nuage_underlay': 'snat',
+            'nuage_aggregate_flows': 'pbr'
         }
 
         cmd_create = ('router create -f json {args} {name}'
@@ -111,6 +112,7 @@ class NuageRouterTests(RouterTests):
             'nuage_tunnel_type': 'VXLAN',
             'nuage_ecmp_count': 4,
             'nuage_underlay': 'route',
+            'nuage_aggregate_flows': 'route',
             'name': utils.get_random_name()
         }
 
