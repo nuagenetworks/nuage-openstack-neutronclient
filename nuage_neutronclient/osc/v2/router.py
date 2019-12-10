@@ -31,6 +31,7 @@ router_resource.nuage_router_template = resource.Body('nuage_router_template')
 router_resource.nuage_tunnel_type = resource.Body('tunnel_type')
 router_resource.nuage_ecmp_count = resource.Body('ecmp_count')
 router_resource.nuage_underlay = resource.Body('nuage_underlay')
+router_resource.nuage_aggregate_flows = resource.Body('nuage_aggregate_flows')
 
 
 def add_create_update_attributes(parser):
@@ -79,6 +80,12 @@ def add_create_update_attributes(parser):
         choices=['off', 'route', 'snat'],
         help=_('Enable nuage underlay options'))
 
+    parser.add_argument(
+        '--nuage-aggregate-flows',
+        choices=['off', 'route', 'pbr'],
+        help=_('Enable nuage aggregate flow options: Choose between no '
+               'aggregate flows or route/pbr based aggragate flows enabled.'))
+
 
 super_get_attrs = router._get_attrs
 
@@ -105,6 +112,8 @@ def _get_attrs(client_manager, parsed_args):
         attrs['ecmp_count'] = parsed_args.nuage_ecmp_count
     if parsed_args.nuage_underlay:
         attrs['nuage_underlay'] = parsed_args.nuage_underlay
+    if parsed_args.nuage_aggregate_flows:
+        attrs['nuage_aggregate_flows'] = parsed_args.nuage_aggregate_flows
 
     return attrs
 
