@@ -42,9 +42,12 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
         # Public network
         cls.openstack('network create --external public-{}'
                       .format(cls.random_name))
-        cls.openstack((('subnet create --subnet-range 98.0.2.1/24 '
+        # use randomised cidr for public network
+        external_cidr = utils.get_random_ipv4_subnet_config()['cidr']
+        cls.openstack((('subnet create --subnet-range {} '
                        '--network public-{} public-{}'
-                        .format(cls.random_name, cls.random_name))))
+                        .format(external_cidr,
+                                cls.random_name, cls.random_name))))
 
         # Router
         cls.openstack('router create {}'.format(cls.random_name))
