@@ -20,10 +20,10 @@ from neutronclient.v2_0.client import UUID_PATTERN
 from openstack.network.v2.port import Port as port_resource
 from openstack import resource
 from openstackclient.network import common as network_common
-from openstackclient.network.v2 import _tag
 from openstackclient.network.v2 import port
 from osc_lib import exceptions
 from osc_lib import utils as osc_utils
+from osc_lib.utils import tags as _tag
 from oslo_utils import netutils
 
 from nuage_neutronclient._i18n import _

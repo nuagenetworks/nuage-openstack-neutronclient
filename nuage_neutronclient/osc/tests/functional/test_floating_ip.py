@@ -61,8 +61,8 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
         # Router
         cls.openstack('router remove subnet {} {}'.format(cls.random_name,
                                                           cls.random_name))
-        cls.openstack(('router remove subnet {} public-{}'
-                       .format(cls.random_name, cls.random_name)))
+        cls.openstack(('router unset --external-gateway {}'
+                       .format(cls.random_name)))
 
         cls.openstack('router delete {}'.format(cls.random_name))
 
