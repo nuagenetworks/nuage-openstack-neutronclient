@@ -15,6 +15,7 @@
 import json
 import random
 
+import netaddr
 from openstackclient.tests.functional.network.v2.test_port import PortTests
 from osc_lib import utils as osc_utils
 from vspk import v6 as vspk
@@ -92,9 +93,11 @@ class NuagePortTestsVSDManaged(PortTests):
         """Create, delete a port with a nuage floating ip"""
 
         # Create Nuage floating ip
-        shared_subnet = self._create_shared_fip_subnet(self.session, '1.1.1.0',
-                                                       '255.255.255.0')
-        floating_ip_str = '1.1.1.10'
+        floatingip_subnet = utils.get_random_ipv4_subnet_config()
+        shared_subnet = self._create_shared_fip_subnet(
+            self.session, floatingip_subnet['address'], '255.255.255.0')
+        floating_ip_str = str(netaddr.IPAddress(floatingip_subnet['address']) +
+                              random.randint(5, 200))
         floating_ip = self.l3domain.create_child(vspk.NUFloatingIp(
             associated_shared_network_resource_id=shared_subnet.id,
             address=floating_ip_str))[0]
