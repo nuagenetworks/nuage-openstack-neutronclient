@@ -13,6 +13,7 @@
 #    under the License.
 #
 import json
+import unittest
 
 import testtools
 
@@ -25,6 +26,7 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
 
     @classmethod
     def setUpClass(cls):
+        raise unittest.case.SkipTest('OPENSTACK-2857')
         super(NuageFloatingIPExtensionTests, cls).setUpClass()
 
         cls.random_name = utils.get_random_name()
