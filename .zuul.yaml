@@ -2,23 +2,16 @@
     check:
       jobs:
         - openstack-tox-pep8
-        - nuage-neutronclient-cli
+        - networking-nuage-tempest-cli
         - nuage-neutronclient-functional
     gate:
       jobs:
         - openstack-tox-pep8
-        - nuage-neutronclient-cli
+        - networking-nuage-tempest-cli
         - nuage-neutronclient-functional
     periodic:
       jobs:
         - nuage-neutronclient-functional
-
-- job:
-    name: nuage-neutronclient-cli
-    parent: networking-nuage-base-py3
-    nodeset: openstack-single-node-rhel7
-    vars:
-      tempest_test_regex: '^nuage_tempest_plugin\.tests\.api\.cli\..*'
 
 - job:
     name: nuage-neutronclient-functional
