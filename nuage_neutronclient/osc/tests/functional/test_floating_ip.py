@@ -25,6 +25,7 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
 
     @classmethod
     def setUpClass(cls):
+        raise cls.skipException('OPENSTACK-2857')
         super(NuageFloatingIPExtensionTests, cls).setUpClass()
 
         cls.random_name = utils.get_random_name()
