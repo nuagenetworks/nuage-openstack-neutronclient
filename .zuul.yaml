@@ -66,7 +66,7 @@
         Q_PLUGIN: ml2
         Q_USE_PROVIDERNET_FOR_PUBLIC: False
         Q_ML2_PLUGIN_EXT_DRIVERS: nuage_subnet,nuage_port,port_security,nuage_network
-        Q_ML2_PLUGIN_TYPE_DRIVERS: vxlan,vlan,flat
+        Q_ML2_PLUGIN_TYPE_DRIVERS: vxlan,vlan,flat,nuage_hybrid_mpls
         Q_ML2_PLUGIN_MECHANISM_DRIVERS: nuage,nuage_baremetal,nuage_sriov,testsriov
         ML2_L3_PLUGIN: NuageL3
         PHYSICAL_NETWORK: physnet1,physnet2
