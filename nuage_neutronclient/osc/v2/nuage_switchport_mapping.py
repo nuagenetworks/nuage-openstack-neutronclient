@@ -34,7 +34,11 @@ _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('port_id', 'Port ID', column_util.LIST_BOTH),
              ('host_id', 'Host ID', column_util.LIST_BOTH),
              ('pci_slot', 'PCI slot', column_util.LIST_BOTH),
-             ('port_uuid', 'Port UUID', column_util.LIST_BOTH))
+             ('port_uuid', 'Port UUID', column_util.LIST_BOTH),
+             ('bridge', 'Bridge', column_util.LIST_BOTH),
+             ('redundant_port_uuid', 'Redundant Port UUID',
+              column_util.LIST_BOTH),
+             )
 
 
 def add_arguments_for_create_update(parser, is_create):
@@ -62,13 +66,18 @@ def add_arguments_for_create_update(parser, is_create):
         dest='pci_slot',
         help=_('PCI id of the VF device.'),
         required=is_create)
+    parser.add_argument(
+        '--bridge',
+        dest='bridge',
+        help=_('Bridge connected to the gateway, if any.'),
+        required=False)
 
 
 def get_body_update_create(parsed_args):
     body = {RESOURCE_NAME: {}}
     update_dict(parsed_args, body[RESOURCE_NAME],
                 ('switch_id', 'switch_info', 'port_id',
-                 'host_id', 'pci_slot'))
+                 'host_id', 'pci_slot', 'bridge'))
     return body
 
 
