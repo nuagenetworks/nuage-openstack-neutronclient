@@ -79,7 +79,7 @@ class NuageSwitchPortTests(base.TestCase):
 
     def create_and_verify_switchport_mapping(self, switch_id, switch_info,
                                              port_id, host_id, pci_slot,
-                                             clean_up=True):
+                                             bridge=None, clean_up=True):
         cmd = ('nuage switchport mapping create -f json '
                '--switch-id {switch_id}'
                ' --switch-info {switch_info} --port-id {port_id} '
@@ -87,6 +87,8 @@ class NuageSwitchPortTests(base.TestCase):
                .format(switch_id=switch_id, port_id=port_id,
                        switch_info=switch_info, host_id=host_id,
                        pci_slot=pci_slot))
+        if bridge:
+            cmd += ' --bridge {}'.format(bridge)
         cmd_output = json.loads(self.openstack(cmd))
         if clean_up:
             self.addCleanup(self.openstack,
@@ -97,7 +99,7 @@ class NuageSwitchPortTests(base.TestCase):
         self.assertIsNotNone(cmd_output)
 
         # with x keys..
-        self.assertEqual(expected=7, observed=len(cmd_output))
+        self.assertEqual(expected=9, observed=len(cmd_output))
 
         # having an id
         self.assertIsNotNone(cmd_output['id'])
@@ -113,6 +115,8 @@ class NuageSwitchPortTests(base.TestCase):
                          expected=port_id)
         self.assertEqual(observed=cmd_output['switch_info'],
                          expected=switch_info)
+        self.assertEqual(observed=cmd_output['bridge'],
+                         expected=bridge)
         self.assertIsNotNone(cmd_output['port_uuid'])
 
         self.assertNotIn(needle='tenant_id', haystack=cmd_output)
@@ -121,19 +125,22 @@ class NuageSwitchPortTests(base.TestCase):
 
     def update_and_verify_switchport_mapping(self, switchport_mapping_id,
                                              switch_id, port_id,
-                                             switch_info, host_id, pci_slot):
+                                             switch_info, host_id, pci_slot,
+                                             bridge=''):
         cmd = ('nuage switchport mapping set --switch-id {switch_id} '
                '--switch-info {switch_info} --port-id {port_id} '
                '--host-id {host_id} --pci-slot {pci_slot} {swp_mapping}'
                .format(switch_id=switch_id, port_id=port_id,
                        switch_info=switch_info, host_id=host_id,
                        pci_slot=pci_slot, swp_mapping=switchport_mapping_id))
+        if bridge:
+            cmd += ' --bridge {}'.format(bridge)
         cmd_output = self.openstack(cmd)
         self.assertEqual(expected='', observed=cmd_output)
 
     def show_and_verify_switchport_mapping(self, id, gw_port_id, host_id,
                                            pci_slot, switch_id, port_id,
-                                           switch_info):
+                                           switch_info, bridge=''):
         cmd = ('nuage switchport mapping show -f json {id}'
                .format(id=id))
         cmd_output = json.loads(self.openstack(cmd))
@@ -142,7 +149,7 @@ class NuageSwitchPortTests(base.TestCase):
         self.assertIsNotNone(cmd_output)
 
         # with x keys..
-        self.assertEqual(expected=7, observed=len(cmd_output))
+        self.assertEqual(expected=9, observed=len(cmd_output))
 
         # having an id
         self.assertIsNotNone(cmd_output['id'])
@@ -158,8 +165,12 @@ class NuageSwitchPortTests(base.TestCase):
                          expected=port_id)
         self.assertEqual(observed=cmd_output['switch_info'],
                          expected=switch_info)
+        self.assertEqual(observed=cmd_output['switch_info'],
+                         expected=switch_info)
         self.assertEqual(observed=cmd_output['port_uuid'],
                          expected=gw_port_id)
+        self.assertEqual(observed=cmd_output['redundant_port_uuid'],
+                         expected=None)
 
         self.assertNotIn(needle='tenant_id', haystack=cmd_output)
 
@@ -167,7 +178,7 @@ class NuageSwitchPortTests(base.TestCase):
 
     def list_and_verify_switchport_mapping(self, id, gw_port_id, host_id,
                                            pci_slot, switch_id, port_id,
-                                           switch_info):
+                                           switch_info, bridge=None):
         cmd = 'nuage switchport mapping list -f json'
         cmd_output = json.loads(self.openstack(cmd))
         for switchport_mapping in cmd_output:
@@ -175,7 +186,7 @@ class NuageSwitchPortTests(base.TestCase):
             self.assertIsNotNone(switchport_mapping)
 
             # with two keys..
-            self.assertEqual(expected=7, observed=len(switchport_mapping))
+            self.assertEqual(expected=9, observed=len(switchport_mapping))
             self.assertEqual(observed=switchport_mapping['ID'], expected=id)
             self.assertEqual(expected=switch_id,
                              observed=switchport_mapping['Switch ID'])
@@ -188,8 +199,13 @@ class NuageSwitchPortTests(base.TestCase):
                              observed=switchport_mapping['Host ID'])
             self.assertEqual(expected=pci_slot,
                              observed=switchport_mapping['PCI slot'])
+            self.assertEqual(expected=bridge,
+                             observed=switchport_mapping.get('Bridge'))
             self.assertEqual(expected=gw_port_id,
                              observed=switchport_mapping['Port UUID'])
+            self.assertEqual(expected=None,
+                             observed=switchport_mapping['Redundant Port UUID']
+                             )
 
         # verify that the switchport mapping with the ID is in the list
         switchport_mapping = next((item for item in cmd_output
@@ -222,6 +238,28 @@ class NuageSwitchPortTests(base.TestCase):
                                port_id=self.gw_port_for_update_phys_name,
                                switch_info=self.name_for_update,
                                host_id='updated', pci_slot='0000:03:10.1')
+        self.update_and_verify_switchport_mapping(
+            cmd_output['id'], **args_for_update)
+        self.show_and_verify_switchport_mapping(
+            cmd_output['id'], self.gw_port_for_update.id, **args_for_update)
+
+        self.delete_and_verify_switchport_mapping(cmd_output['id'])
+
+    def test_create_list_show_delete_switchport_mapping_with_bridge(self):
+        kwargs = dict(host_id='fake_host_id', pci_slot='eth0',
+                      switch_id=self.system_id, port_id=self.gw_port_phys_name,
+                      switch_info=self.name, bridge='br-ex')
+        cmd_output = self.create_and_verify_switchport_mapping(clean_up=False,
+                                                               **kwargs)
+        self.list_and_verify_switchport_mapping(
+            cmd_output['id'], self.gw_port.id, **kwargs)
+        self.show_and_verify_switchport_mapping(
+            cmd_output['id'], self.gw_port.id, **kwargs)
+        args_for_update = dict(switch_id=self.system_id_for_update,
+                               port_id=self.gw_port_for_update_phys_name,
+                               switch_info=self.name_for_update,
+                               host_id='updated', pci_slot='eth1',
+                               bridge='updated')
         self.update_and_verify_switchport_mapping(
             cmd_output['id'], **args_for_update)
         self.show_and_verify_switchport_mapping(
