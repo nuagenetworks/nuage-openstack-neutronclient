@@ -31,7 +31,7 @@ RESOURCE_NAME_PLURAL = 'switchport_mappings'
 _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('switch_id', 'Switch ID', column_util.LIST_BOTH),
              ('switch_info', 'Switch Info', column_util.LIST_BOTH),
-             ('port_name', 'Port Name', column_util.LIST_BOTH),
+             # ('port_name', 'Port Name', column_util.LIST_BOTH),
              ('host_id', 'Host ID', column_util.LIST_BOTH),
              ('physnet', 'Physical Network', column_util.LIST_BOTH),
              ('port_uuid', 'Port UUID', column_util.LIST_BOTH))
@@ -54,6 +54,11 @@ def add_arguments_for_create_update(parser, is_create):
         help=_('Physical port name of the switch port'),
         required=is_create)
     parser.add_argument(
+        '--port-desc',
+        dest='port_desc',
+        help=_('Port description to put in VSD'),
+        required=False)
+    parser.add_argument(
         '--host-id',
         help=_('Nova compute host id, hypervisor_hostname'),
         required=is_create)
@@ -67,7 +72,8 @@ def add_arguments_for_create_update(parser, is_create):
 def get_body_update_create(parsed_args):
     body = {RESOURCE_NAME: {}}
     update_dict(parsed_args, body[RESOURCE_NAME],
-                ('switch_id', 'switch_info', 'port_name', 'host_id', 'physnet'))
+                ('switch_id', 'switch_info', 'port_name', 'port_desc',
+                 'host_id', 'physnet'))
     return body
 
 
