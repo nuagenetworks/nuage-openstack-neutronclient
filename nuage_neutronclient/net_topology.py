@@ -56,7 +56,7 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
         #    dest='pci_slot',
         #    help=_('PCI id of the VF device.'))
         parser.add_argument(
-            '--phys-net',
+            '--physnet',
             dest='physnet',
             help=_('Physical network to which the NIC is connected'))
 
@@ -119,7 +119,7 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
         parser.add_argument(
-            '--phys-net',
+            '--physnet',
             dest='physnet',
             help=_('Physical network to which the NIC is connected.'))
 
