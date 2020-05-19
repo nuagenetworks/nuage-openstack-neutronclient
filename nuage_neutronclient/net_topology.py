@@ -40,10 +40,10 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
             '--switch-info',
             dest='switch_info',
             help=_('Name of the switch device'))
-        #parser.add_argument(
-        #    '--port-id',
-        #    dest='port_id',
-        #    help=_('Port mnemonic of phys port of the switch'))
+        parser.add_argument(
+            '--port-name',
+            dest='port_name',
+            help=_('Physical port name of port on the switch'))
         parser.add_argument(
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
@@ -60,7 +60,7 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
 
     def args2body(self, args):
         body = {}
-        attributes = ['switch_id', 'switch_info', 'host_id', 'physnet']
+        attributes = ['switch_id', 'switch_info', 'port_name', 'host_id', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
@@ -70,7 +70,7 @@ class SwitchportMappingList(extension.ClientExtensionList, SwitchportMapping):
     """List switchport mappings."""
 
     shell_command = 'nuage-switchport-mapping-list'
-    list_columns = ['id', 'switch_id', 'host_id', 'physnet']
+    list_columns = ['id', 'switch_id', 'port_name', 'host_id', 'physnet']
     pagination_support = True
     sorting_support = True
 
@@ -103,10 +103,10 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
             '--switch-info',
             dest='switch_info',
             help=_('Name of the gateway device'))
-        #parser.add_argument(
-        #    '--port_id',
-        #    dest='port_id',
-        #    help=_('Port mnemoniq of phys port of gateway'))
+        parser.add_argument(
+            '--port_name',
+            dest='port_name',
+            help=_('Physical port name of gateway port'))
         parser.add_argument(
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
@@ -117,7 +117,7 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
 
     def args2body(self, args):
         body = {}
-        attributes = ['switch_id', 'switch_info', 'host_id', 'physnet']
+        attributes = ['switch_id', 'switch_info', 'port_name', 'host_id', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
