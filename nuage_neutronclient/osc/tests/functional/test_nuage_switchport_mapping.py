@@ -42,11 +42,12 @@ class NuageSwitchPortTests(base.TestCase):
                            system_id=cls.system_id,
                            personality=cls.personality))[0]
         cls.gw_port_name = 'gw-port-1'
+        cls.gw_port_phys_name = '1/1/1'
         cls.gw_port = cls.gateway.create_child(
             vspk.NUPort(name=cls.gw_port_name,
                         user_mnemonic=cls.gw_port_name + '_mnem',
                         vlan_range='0-4095',
-                        physical_name=cls.gw_port_name + 'phys',
+                        physical_name=cls.gw_port_phys_name,
                         port_type='ACCESS'))[0]
 
         # Second gateway + port to update the switchport mapping
@@ -59,12 +60,13 @@ class NuageSwitchPortTests(base.TestCase):
                            personality=cls.personality))[0]
 
         cls.gw_port_for_update_name = 'gw-port-2'
+        cls.gw_port_for_update_phys_name = '1/1/2'
 
         cls.gw_port_for_update = cls.gateway_for_update.create_child(
             vspk.NUPort(name=cls.gw_port_for_update_name,
                         user_mnemonic=(cls.gw_port_for_update_name + '_mnem'),
                         vlan_range='0-4095',
-                        physical_name=cls.gw_port_for_update_name + '_phys',
+                        physical_name=cls.gw_port_for_update_phys_name,
                         port_type='ACCESS'))[0]
         pass
 
@@ -208,7 +210,7 @@ class NuageSwitchPortTests(base.TestCase):
 
     def test_list_show_set_delete_switchport_mapping(self):
         kwargs = dict(host_id='fake_host_id', pci_slot='0000:18:06.6',
-                      switch_id=self.system_id, port_id=self.gw_port_name,
+                      switch_id=self.system_id, port_id=self.gw_port_phys_name,
                       switch_info=self.name)
         cmd_output = self.create_and_verify_switchport_mapping(clean_up=False,
                                                                **kwargs)
@@ -217,7 +219,7 @@ class NuageSwitchPortTests(base.TestCase):
         self.show_and_verify_switchport_mapping(
             cmd_output['id'], self.gw_port.id, **kwargs)
         args_for_update = dict(switch_id=self.system_id_for_update,
-                               port_id=self.gw_port_for_update_name,
+                               port_id=self.gw_port_for_update_phys_name,
                                switch_info=self.name_for_update,
                                host_id='updated', pci_slot='0000:03:10.1')
         self.update_and_verify_switchport_mapping(
@@ -239,7 +241,7 @@ class NuageSwitchPortTests(base.TestCase):
 
         self.create_and_verify_switchport_mapping(
             host_id=host_id, pci_slot=pci_slot, switch_id=self.system_id,
-            port_id=self.gw_port_name, switch_info=self.name)
+            port_id=self.gw_port_phys_name, switch_info=self.name)
 
         network_name = utils.get_random_name()
         self.openstack('network create --mtu 1400 --provider-network-type vlan'
@@ -286,7 +288,7 @@ class NuageSwitchPortTests(base.TestCase):
         self.assertEqual(expected=item['Switch ID'],
                          observed=self.system_id)
         self.assertEqual(expected=item['Port ID'],
-                         observed=self.gw_port_name)
+                         observed=self.gw_port_phys_name)
         self.assertEqual(expected=item['Segmentation ID'],
                          observed=vlan)
 
@@ -304,6 +306,6 @@ class NuageSwitchPortTests(base.TestCase):
         self.assertEqual(expected=cmd_output['switch_id'],
                          observed=self.system_id)
         self.assertEqual(expected=cmd_output['port_id'],
-                         observed=self.gw_port_name)
+                         observed=self.gw_port_phys_name)
         self.assertEqual(expected=cmd_output['segmentation_id'],
                          observed=vlan)
