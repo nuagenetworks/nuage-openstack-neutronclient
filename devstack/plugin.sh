@@ -1,10 +1,8 @@
 #!/bin/bash
 # plugin.sh - DevStack plugin.sh dispatch script
 
-DIR_NUAGECLIENT=$DEST/nuage-openstack-neutronclient
-
 function install_nuage_neutronclient {
-     setup_develop $DIR_NUAGECLIENT
+     setup_dev_lib "nuage-openstack-neutronclient"
 }
 
 
