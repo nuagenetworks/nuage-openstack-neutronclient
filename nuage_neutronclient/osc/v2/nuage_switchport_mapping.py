@@ -31,8 +31,8 @@ _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('switch_id', 'Switch ID', column_util.LIST_BOTH),
              ('switch_info', 'Switch Info', column_util.LIST_BOTH),
              # ('port_name', 'Port Name', column_util.LIST_BOTH),
-             ('host_id', 'Host ID[:PCI slot]', column_util.LIST_BOTH),
              ('physnet', 'Physical Network', column_util.LIST_BOTH),
+             ('host_id', 'Host ID[:PCI slot]', column_util.LIST_BOTH),
              ('port_uuid', 'Port UUID', column_util.LIST_BOTH))
 
 def add_arguments_for_create_update(parser, is_create):
