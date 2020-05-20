@@ -51,10 +51,10 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
         parser.add_argument(
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
-        #parser.add_argument(
-        #    '--pci-slot',
-        #    dest='pci_slot',
-        #    help=_('PCI id of the VF device.'))
+        parser.add_argument(
+            '--pci-slot',
+            dest='pci_slot',
+            help=_('Optional PCI id of a VF device on the given host'))
         parser.add_argument(
             '--physnet',
             dest='physnet',
@@ -64,7 +64,8 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
 
     def args2body(self, args):
         body = {}
-        attributes = ['switch_id', 'switch_info', 'port_name', 'port_desc','host_id', 'physnet']
+        attributes = ['switch_id', 'switch_info', 'port_name', 'port_desc',
+                      'host_id', 'pci_slot', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
@@ -119,6 +120,9 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
         parser.add_argument(
+            '--pci-slot',
+            help=_('Optional PCI slot of a VF on the given host'))
+        parser.add_argument(
             '--physnet',
             dest='physnet',
             help=_('Physical network to which the NIC is connected.'))
@@ -126,7 +130,7 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
     def args2body(self, args):
         body = {}
         attributes = ['switch_id', 'switch_info', 'port_name', 'port_desc',
-                      'host_id', 'physnet']
+                      'host_id', 'pci_slot', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
