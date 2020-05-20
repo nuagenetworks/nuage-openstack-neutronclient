@@ -65,7 +65,7 @@ def add_arguments_for_create_update(parser, is_create):
         help=_('Optional PCI slot of a VF on given host'),
         required=False)
     parser.add_argument(
-        '--phys-net',
+        '--physnet',
         dest='physnet',
         help=_('Physical network for the given NIC.'),
         required=is_create)
