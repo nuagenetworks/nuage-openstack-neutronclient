@@ -16,14 +16,29 @@
 - job:
     name: nuage-neutronclient-cli
     parent: networking-nuage-base-py3
-    nodeset: openstack-single-node-rhel7
+    nodeset: openstack-single-node-centos7
+    override-checkout: stable/stein
     vars:
+      devstack_localrc:
+        Q_ML2_PLUGIN_TYPE_DRIVERS: vxlan,vlan,flat
+        TEMPEST_PLUGINS: '"/opt/stack/nuage-tempest-plugin"'
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            nuage_sut:
+              nuage_hybrid_mpls_enabled: False
       tempest_test_regex: '^nuage_tempest_plugin\.tests\.api\.cli\..*'
+    required-projects:
+      - name: OpenStack/nuage-openstack-neutron
+        override-checkout: 6.0/stein
+      - name: OpenStack/nuage-openstack-neutronclient
+        override-checkout: 6.0/stein
 
 - job:
     name: nuage-neutronclient-functional
     parent: devstack-tox-functional
-    nodeset: openstack-single-node-rhel7
+    nodeset: openstack-single-node-centos7
+    override-checkout: stable/stein
     irrelevant-files:
       - ^(test-|)requirements.txt$
       - ^.*\.rst$
@@ -34,15 +49,17 @@
       - ^tox.ini$
     required-projects:
       - OpenStack/networking-testsriov
-      - OpenStack/nuage-openstack-neutron
-      - OpenStack/nuage-openstack-neutronclient
+      - name: OpenStack/nuage-openstack-neutron
+        override-checkout: 6.0/stein
+      - name: OpenStack/nuage-openstack-neutronclient
+        override-checkout: 6.0/stein
       - opendev.org/openstack/neutron
       - opendev.org/openstack/python-openstackclient
       - opendev.org/openstack/placement
     run: playbooks/run.yaml
     vars:
       nuage_fip_range: "172.{{ 255 | random }}.{{ 255 | random }}"
-      vsp_release: "{{ nuage_vsp_release }}"
+      vsp_release: '6.0'
       tox_envlist: functional
       devstack_services:
         tls-proxy: false

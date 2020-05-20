@@ -8,7 +8,6 @@ function install_nuage_neutronclient {
 }
 
 
-
 # check for service enabled
 if is_service_enabled nuage_neutronclient; then
 
