@@ -16,7 +16,7 @@
 - job:
     name: nuage-neutronclient-functional
     parent: devstack-tox-functional
-    nodeset: openstack-single-node-rhel7
+    nodeset: openstack-single-node-centos7
     irrelevant-files:
       - ^(test-|)requirements.txt$
       - ^.*\.rst$
