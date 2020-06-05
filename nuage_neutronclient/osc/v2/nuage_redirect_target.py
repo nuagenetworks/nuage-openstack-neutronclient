@@ -34,7 +34,8 @@ _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('redundancy_enabled', 'Redundancy Enabled',
               column_util.LIST_BOTH),
              ('insertion_mode', 'Insertion Mode', column_util.LIST_BOTH),
-             ('ports', 'Ports', column_util.LIST_LONG_ONLY))
+             ('ports', 'Ports', column_util.LIST_LONG_ONLY),
+             )
 
 
 class ListNuageRedirectTarget(command.Lister):
