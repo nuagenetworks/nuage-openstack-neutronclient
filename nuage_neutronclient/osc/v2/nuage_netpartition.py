@@ -24,7 +24,8 @@ from nuage_neutronclient._i18n import _
 LOG = logging.getLogger(__name__)
 
 _attr_map = (('id', 'ID', column_util.LIST_BOTH),
-             ('name', 'Name', column_util.LIST_BOTH))
+             ('name', 'Name', column_util.LIST_BOTH),
+             )
 
 
 class CreateNuageNetpartition(command.ShowOne):

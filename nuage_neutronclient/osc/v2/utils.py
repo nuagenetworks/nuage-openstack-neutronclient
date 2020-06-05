@@ -17,6 +17,7 @@ to Networking v2 API and its extensions.
 """
 
 from cliff import columns as cliff_columns
+from neutronclient.common import exceptions
 from osc_lib.utils import format_dict
 
 
@@ -48,3 +49,24 @@ def format_list_of_dicts(data):
         return None
 
     return '\n'.join(sorted(format_dict(i) for i in data))
+
+
+def find_nested_resource(name_or_id, parent_name_or_id, resource_finder,
+                         resource_lister, parent_resource_finder,
+                         resource_name, parent_resource_name):
+    if parent_name_or_id is None:
+        return resource_finder(name_or_id)
+    else:
+        parent_id = parent_resource_finder(parent_name_or_id)['id']
+        items = resource_lister(**{parent_resource_name: parent_id,
+                                   "id": name_or_id})
+        if len(items) != 1:
+            items = resource_lister(**{parent_resource_name: parent_id,
+                                       "name": name_or_id})
+        if len(items) != 1:
+            not_found_message = (
+                "Unable to find unique {resource} with name "
+                "or id '{name_or_id}'".format(resource=resource_name,
+                                              name_or_id=name_or_id))
+            raise exceptions.NotFound(message=not_found_message)
+        return items[0]
