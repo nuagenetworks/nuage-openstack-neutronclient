@@ -31,7 +31,14 @@ class Client(client.ClientBase):
         "/project_net_partition_mappings/{id}")
     nuage_project_netpartition_mappings_path = (
         "/project_net_partition_mappings")
-
+    nuage_gateway_path = '/nuage-gateways/{id}'
+    nuage_gateways_path = '/nuage-gateways'
+    nuage_gateway_port_path = '/nuage-gateway_ports/{id}'
+    nuage_gateway_ports_path = '/nuage-gateway-ports'
+    nuage_gateway_vlan_path = '/nuage_gateway_vlans/{id}'
+    nuage_gateway_vlans_path = '/nuage_gateway_vlans'
+    nuage_gateway_vports_path = '/nuage_gateway_vports'
+    nuage_gateway_vport_path = '/nuage_gateway_vports/{id}'
     nuage_redirect_targets_path = "/nuage_redirect_targets"
     nuage_redirect_target_path = "/nuage_redirect_targets/{id}"
     nuage_switchport_binding_path = "/net-topology/switchport_bindings/{id}"
@@ -106,6 +113,50 @@ class Client(client.ClientBase):
         return self._update_resource(
             self.nuage_switchport_mapping_path.format(id=switchport_id),
             body=body, revision_number=revision_number)
+
+    def list_nuage_gateways(self, **_params):
+        return self.get(self.nuage_gateways_path, params=_params)
+
+    def show_nuage_gateway(self, id, **_params):
+        return self.get(self.nuage_gateway_path.format(id=id),
+                        params=_params)
+
+    def list_nuage_gateway_ports(self, **_params):
+        return self.get(self.nuage_gateway_ports_path, params=_params)
+
+    def show_nuage_gateway_port(self, id, **_params):
+        return self.get(self.nuage_gateway_port_path.format(id=id),
+                        params=_params)
+
+    def create_nuage_gateway_vport(self, body):
+        return self.post(self.nuage_gateway_vports_path, body=body)
+
+    def show_nuage_gateway_vport(self, id, **_params):
+        return self.get(self.nuage_gateway_vport_path.format(id=id),
+                        params=_params)
+
+    def list_nuage_gateway_vports(self, **_params):
+        return self.get(self.nuage_gateway_vports_path, params=_params)
+
+    def delete_nuage_gateway_vport(self, vport_id):
+        return self.delete(self.nuage_gateway_vport_path.format(id=vport_id))
+
+    def list_nuage_gateway_vlans(self, **_params):
+        return self.get(self.nuage_gateway_vlans_path, params=_params)
+
+    def show_nuage_gateway_vlan(self, id, **_params):
+        return self.get(self.nuage_gateway_vlan_path.format(id=id),
+                        params=_params)
+
+    def create_nuage_gateway_vlan(self, body):
+        return self.post(self.nuage_gateway_vlans_path, body=body)
+
+    def update_nuage_gateway_vlan(self, vlan_id, body):
+        return self.put(self.nuage_gateway_vlan_path.format(id=vlan_id),
+                        body=body)
+
+    def delete_nuage_gateway_vlan(self, vlan_id):
+        return self.delete(self.nuage_gateway_vlan_path.format(id=vlan_id))
 
     def create_net_partition(self, name):
         net_partition = {'net_partition': {'name': name}}
