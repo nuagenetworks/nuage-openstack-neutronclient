@@ -30,7 +30,8 @@ _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('neutron_port_id', 'Neutron port ID', column_util.LIST_BOTH),
              ('switch_id', 'Switch ID', column_util.LIST_BOTH),
              ('port_id', 'Port ID', column_util.LIST_BOTH),
-             ('segmentation_id', 'Segmentation ID', column_util.LIST_BOTH))
+             ('segmentation_id', 'Segmentation ID', column_util.LIST_BOTH),
+             )
 
 
 class ListNuageSwitchportBinding(command.Lister):
