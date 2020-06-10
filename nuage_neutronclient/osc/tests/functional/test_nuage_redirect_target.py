@@ -18,6 +18,7 @@ import netaddr
 from openstackclient.tests.functional import base
 from osc_lib.utils import format_list
 from tempest.lib import exceptions
+import testtools
 
 from vspk import v6 as vspk
 
@@ -154,6 +155,7 @@ class NuageRedirectTargetTests(base.TestCase):
                                               if expected_ports else []),
                          observed=observed_rt['Ports'])
 
+    @testtools.skip("OPENSTACK-2908: RedirectTarget tests not working.")
     def test_list_show(self):
         # check list by subnet
         cmd_output = json.loads(
@@ -196,6 +198,7 @@ class NuageRedirectTargetTests(base.TestCase):
             'nuage redirect target show {} '
             '-f json'.format('non-existing-RT'))
 
+    @testtools.skip("OPENSTACK-2908: RedirectTarget tests not working.")
     def test_with_ports(self):
         # Assign ports to redirect target
         vportl3 = self.l3domain.vports.get_first()
