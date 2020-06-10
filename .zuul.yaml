@@ -36,7 +36,7 @@
     run: playbooks/run.yaml
     vars:
       nuage_fip_range: "172.{{ 255 | random }}.{{ 255 | random }}"
-      vsp_release: "{{ nuage_vsp_release }}"
+      vsp_release: "20.5"
       tox_envlist: functional
       devstack_services:
         tls-proxy: false
