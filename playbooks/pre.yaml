@@ -1,5 +1,6 @@
 - hosts: all
   tasks:
-    - name: Upgrade pip
-      become: yes
-      command: pip3 install --upgrade pip
+    - name: Workaround uwsgi 2.0.19
+      lineinfile:
+        path: /opt/stack/requirements/upper-constraints.txt
+        line: uwsgi===2.0.18
