@@ -14,9 +14,9 @@
         - nuage-neutronclient-functional
 
 - job:
-    name: nuage-neutronclient-functional
+    name: nuage-neutronclient-functional-base
+    abstract: true
     parent: devstack-tox-functional
-    nodeset: openstack-single-node-centos
     branches: '.*'
     irrelevant-files:
       - ^(test-|)requirements.txt$
@@ -82,3 +82,16 @@
         nuage-openstack-neutron: https://github.com/nuagenetworks/nuage-openstack-neutron.git
         nuage-openstack-neutronclient: https://github.com/nuagenetworks/nuage-openstack-neutronclient.git
         networking-testsriov: https://github.com/nuagenetworks/networking-testsriov.git
+- job:
+    name: nuage-neutronclient-functional
+    parent: nuage-neutronclient-functional-base
+    branches: ^(stable|6.0|5.4)/(pike|queens|rocky|stein|train).*$
+    nodeset: openstack-single-node-centos7
+
+- job:
+    name: nuage-neutronclient-functional
+    parent: nuage-neutronclient-functional-base
+    branches: ^(?!(stable|5.4|6.0)/(pike|queens|rocky|stein|train)).*$
+    nodeset: openstack-single-node-centos
+
+
