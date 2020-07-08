@@ -27,15 +27,13 @@ LOG = logging.getLogger(__name__)
 RESOURCE_NAME = 'switchport_mapping'
 RESOURCE_NAME_PLURAL = 'switchport_mappings'
 
-
 _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('switch_id', 'Switch ID', column_util.LIST_BOTH),
              ('switch_info', 'Switch Info', column_util.LIST_BOTH),
-             ('port_id', 'Port ID', column_util.LIST_BOTH),
-             ('host_id', 'Host ID', column_util.LIST_BOTH),
-             ('pci_slot', 'PCI slot', column_util.LIST_BOTH),
+             # ('port_name', 'Port Name', column_util.LIST_BOTH),
+             ('physnet', 'Physical Network', column_util.LIST_BOTH),
+             ('host_id', 'Host ID[:PCI slot]', column_util.LIST_BOTH),
              ('port_uuid', 'Port UUID', column_util.LIST_BOTH))
-
 
 def add_arguments_for_create_update(parser, is_create):
     parser.add_argument(
@@ -49,26 +47,35 @@ def add_arguments_for_create_update(parser, is_create):
         help=_('Name of the switch device'),
         required=False)
     parser.add_argument(
-        '--port-id',
-        dest='port_id',
-        help=_('Name of the port of the switch'),
+        '--port-name',
+        dest='port_name',
+        help=_('Physical port name of the switch port'),
         required=is_create)
+    parser.add_argument(
+        '--port-desc',
+        dest='port_desc',
+        help=_('Port description to put in VSD'),
+        required=False)
     parser.add_argument(
         '--host-id',
         help=_('Nova compute host id, hypervisor_hostname'),
         required=is_create)
     parser.add_argument(
         '--pci-slot',
-        dest='pci_slot',
-        help=_('PCI id of the VF device.'),
+        help=_('Optional PCI slot of a VF on given host'),
+        required=False)
+    parser.add_argument(
+        '--physnet',
+        dest='physnet',
+        help=_('Physical network for the given NIC.'),
         required=is_create)
 
 
 def get_body_update_create(parsed_args):
     body = {RESOURCE_NAME: {}}
     update_dict(parsed_args, body[RESOURCE_NAME],
-                ('switch_id', 'switch_info', 'port_id',
-                 'host_id', 'pci_slot'))
+                ('switch_id', 'switch_info', 'port_name', 'port_desc',
+                 'host_id', 'pci_slot', 'physnet'))
     return body
 
 

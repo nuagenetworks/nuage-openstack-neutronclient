@@ -41,23 +41,31 @@ class SwitchportMappingCreate(extension.ClientExtensionCreate,
             dest='switch_info',
             help=_('Name of the switch device'))
         parser.add_argument(
-            '--port-id',
-            dest='port_id',
-            help=_('Port mnemonic of phys port of the switch'))
+            '--port-name',
+            dest='port_name',
+            help=_('Physical port name of port on the switch'))
+        parser.add_argument(
+            '--port-desc',
+            dest='port_desc',
+            help=_('Port description to put in VSD'))
         parser.add_argument(
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
         parser.add_argument(
             '--pci-slot',
             dest='pci_slot',
-            help=_('PCI id of the VF device.'))
+            help=_('Optional PCI id of a VF device on the given host'))
+        parser.add_argument(
+            '--physnet',
+            dest='physnet',
+            help=_('Physical network to which the NIC is connected'))
 
         return parser
 
     def args2body(self, args):
         body = {}
-        attributes = ['switch_id', 'switch_info', 'port_id',
-                      'host_id', 'pci_slot']
+        attributes = ['switch_id', 'switch_info', 'port_name', 'port_desc',
+                      'host_id', 'pci_slot', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
@@ -67,7 +75,7 @@ class SwitchportMappingList(extension.ClientExtensionList, SwitchportMapping):
     """List switchport mappings."""
 
     shell_command = 'nuage-switchport-mapping-list'
-    list_columns = ['id', 'switch_id', 'port_id', 'host_id', 'pci_slot']
+    list_columns = ['id', 'switch_id', 'port_uuid', 'host_id', 'physnet']
     pagination_support = True
     sorting_support = True
 
@@ -101,21 +109,28 @@ class SwitchportMappingUpdate(extension.ClientExtensionUpdate,
             dest='switch_info',
             help=_('Name of the gateway device'))
         parser.add_argument(
-            '--port_id',
-            dest='port_id',
-            help=_('Port mnemoniq of phys port of gateway'))
+            '--port-name',
+            dest='port_name',
+            help=_('Physical port name of gateway port'))
+        parser.add_argument(
+            '--port-desc',
+            dest='port_desc',
+            help=_('Port description to put in VSD'))
         parser.add_argument(
             '--host-id',
             help=_('Nova compute host id. hypervisor_hostname'))
         parser.add_argument(
             '--pci-slot',
-            dest='pci_slot',
-            help=_('PCI id of the device.'))
+            help=_('Optional PCI slot of a VF on the given host'))
+        parser.add_argument(
+            '--physnet',
+            dest='physnet',
+            help=_('Physical network to which the NIC is connected.'))
 
     def args2body(self, args):
         body = {}
-        attributes = ['switch_id', 'switch_info', 'port_id',
-                      'host_id', 'pci_slot']
+        attributes = ['switch_id', 'switch_info', 'port_name', 'port_desc',
+                      'host_id', 'pci_slot', 'physnet']
         gw_mappingV20.update_dict(args, body, attributes)
 
         return {'switchport_mapping': body}
