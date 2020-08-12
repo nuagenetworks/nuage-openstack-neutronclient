@@ -32,7 +32,8 @@ class CreateRouter(extension.ClientExtensionCreate, router.CreateRouter):
 
     def args2body(self, parsed_args):
         body = super(CreateRouter, self).args2body(parsed_args)
-        body['router']['nuage_underlay'] = parsed_args.nuage_underlay
+        if parsed_args.nuage_underlay:
+            body['router']['nuage_underlay'] = parsed_args.nuage_underlay
         return body
 
 
@@ -50,5 +51,6 @@ class UpdateRouter(extension.ClientExtensionUpdate, router.UpdateRouter):
 
     def args2body(self, parsed_args):
         body = super(UpdateRouter, self).args2body(parsed_args)
-        body['router']['nuage_underlay'] = parsed_args.nuage_underlay
+        if parsed_args.nuage_underlay:
+            body['router']['nuage_underlay'] = parsed_args.nuage_underlay
         return body
