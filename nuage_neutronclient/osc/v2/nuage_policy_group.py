@@ -33,7 +33,8 @@ _attr_map = (('id', 'ID', column_util.LIST_BOTH),
              ('scope', 'Scope', column_util.LIST_LONG_ONLY),
              ('evpn_tag', 'EVPN Tag', column_util.LIST_LONG_ONLY),
              ('pg_id', 'Policy group ID', column_util.LIST_LONG_ONLY),
-             ('ports', 'Ports', column_util.LIST_LONG_ONLY))
+             ('ports', 'Ports', column_util.LIST_LONG_ONLY),
+             )
 
 
 class ListNuagePolicyGroup(command.Lister):
