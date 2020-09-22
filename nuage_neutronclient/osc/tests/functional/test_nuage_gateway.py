@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 #
+import itertools
 import json
 import random
 
@@ -135,6 +136,18 @@ class NuageGatewayTests(base.TestCase):
     def _verify_vport_values_for_list(self, *args, **kwargs):
         self._verify_show_list_vport_values(*args, is_long=False, **kwargs)
 
+    def _openstack_assert_equivalent(self, commands,
+                                     message='Lookup by name and id should '
+                                             'return the same output'):
+        """Verify that a series of cli commands return the same output
+
+        @return command output
+        """
+        cmd_output = json.loads(self.openstack(commands.pop()))
+        self.assertTrue(all(json.loads(
+            self.openstack(x)) == cmd_output for x in commands), message)
+        return cmd_output
+
     def test_list_gateway(self):
         cmd = 'nuage gateway list -f json'
         cmd_output = json.loads(self.openstack(cmd))
@@ -156,8 +169,9 @@ class NuageGatewayTests(base.TestCase):
         self.assertNotIn(needle='Redundant', haystack=gw)
 
     def test_show_gateway(self):
-        cmd = 'nuage gateway show -f json {}'.format(self.gw_name)
-        cmd_output = json.loads(self.openstack(cmd))
+        cmd_output = self._openstack_assert_equivalent([
+            'nuage gateway show -f json {}'.format(self.gw_name),
+            'nuage gateway show -f json {}'.format(self.gateway.id)])
 
         # verify something is returned..
         self.assertGreater(len(cmd_output), 0)
@@ -177,9 +191,9 @@ class NuageGatewayTests(base.TestCase):
         self.assertEqual(observed=gw['Redundant'], expected=False)
 
     def test_list_gateway_port(self):
-        cmd = ('nuage gateway port list {} -f json'
-               .format(self.gw_name))
-        cmd_output = json.loads(self.openstack(cmd))
+        cmd_output = self._openstack_assert_equivalent([
+            'nuage gateway port list -f json {}'.format(self.gw_name),
+            'nuage gateway port list -f json {}'.format(self.gateway.id)])
 
         self._verify_expected_keys_for_list(
             cmd_output, self._gw_port_attr_map)
@@ -199,9 +213,17 @@ class NuageGatewayTests(base.TestCase):
         self.assertEqual(observed=gw_port['Status'], expected='INITIALIZED')
 
     def test_show_gateway_port(self):
-        cmd = ('nuage gateway port show --gateway {} -f json {}'
-               .format(self.gw_name, self.gw_port_name))
-        cmd_output = json.loads(self.openstack(cmd))
+        cmd_output = self._openstack_assert_equivalent([
+            'nuage gateway port show --gateway {} -f json {}'
+            .format(self.gw_name, self.gw_port_name),
+            'nuage gateway port show --gateway {} -f json {}'
+            .format(self.gw_name, self.gw_port.id),
+            'nuage gateway port show --gateway {} -f json {}'
+            .format(self.gateway.id, self.gw_port_name),
+            'nuage gateway port show --gateway {} -f json {}'
+            .format(self.gateway.id, self.gw_port.id),
+            'nuage gateway port show -f json {}'
+            .format(self.gw_port.id)])
 
         # verify something is returned..
         self.assertGreater(len(cmd_output), 0)
@@ -230,11 +252,21 @@ class NuageGatewayTests(base.TestCase):
         cmd_output_create = json.loads(self.openstack(cmd))
 
         # show vlan
-        cmd_show = ('nuage gateway port vlan show --gateway {} '
-                    '--gatewayport {} -f json {}'
-                    .format(self.gw_name, self.gw_port_name, random_vlan))
-
-        cmd_output_show = json.loads(self.openstack(cmd_show))
+        show_with_3_args = itertools.product(
+            ['--gateway ' + self.gw_name, '--gateway ' + self.gateway.id],
+            ['--gatewayport ' + self.gw_port_name, '--gatewayport ' +
+             self.gw_port.id],
+            [str(random_vlan), cmd_output_create['ID']]
+        )
+        show_with_2_args = itertools.product(
+            ['--gatewayport ' + self.gw_port.id],
+            [str(random_vlan), cmd_output_create['ID']]
+        )
+        show_with_1_arg = [[cmd_output_create['ID']]]
+        cmd_output_show = self._openstack_assert_equivalent([
+            'nuage gateway port vlan show -f json {}'. format(' '.join(args))
+            for args in itertools.chain(show_with_3_args, show_with_2_args,
+                                        show_with_1_arg)])
 
         # Show and create return the same output
         self.assertEqual(cmd_output_create, cmd_output_show)
@@ -247,9 +279,17 @@ class NuageGatewayTests(base.TestCase):
         self._verify_show_list_vlan_values(cmd_output, random_vlan)
 
         # list vlan
-        cmd = 'nuage gateway port vlan list --gateway {} {} ' \
-              '-f json'.format(self.gw_name, self.gw_port_name)
-        cmd_output = json.loads(self.openstack(cmd))
+        cmd_output = self._openstack_assert_equivalent([
+            'nuage gateway port vlan list -f json --gateway {} {}'
+            .format(self.gw_name, self.gw_port_name),
+            'nuage gateway port vlan list -f json --gateway {} {}'
+            .format(self.gw_name, self.gw_port.id),
+            'nuage gateway port vlan list -f json --gateway {} {}'
+            .format(self.gateway.id, self.gw_port_name),
+            'nuage gateway port vlan list -f json --gateway {} {}'
+            .format(self.gateway.id, self.gw_port.id),
+            'nuage gateway port vlan list -f json {}'
+            .format(self.gw_port.id)])
 
         self._verify_expected_keys_for_list(cmd_output, self._vlan_attr_map)
 
@@ -267,7 +307,9 @@ class NuageGatewayTests(base.TestCase):
         cmd_output = self.openstack(cmd)
         self.assertEqual('', cmd_output)
 
-        cmd_output_show = json.loads(self.openstack(cmd_show))
+        cmd_output_show = json.loads(self.openstack(
+            'nuage gateway port vlan show -f json {}'.format(
+                cmd_output_create['ID'])))
         self.assertIsNotNone(cmd_output_show['Assigned'])
 
         # remove project
@@ -278,7 +320,9 @@ class NuageGatewayTests(base.TestCase):
         cmd_output = self.openstack(cmd)
         self.assertEqual('', cmd_output)
 
-        cmd_output_show = json.loads(self.openstack(cmd_show))
+        cmd_output_show = json.loads(
+            self.openstack('nuage gateway port vlan show -f json {}'
+                           .format(cmd_output_create['ID'])))
         self.assertIsNone(cmd_output_show['Assigned'])
 
         # Delete VLAN
@@ -383,9 +427,11 @@ class NuageGatewayTests(base.TestCase):
         self._verify_vport_values_for_show(cmd_output_show, **params)
 
         # list vPorts
-        cmd = ('nuage gateway vport list subnet_{} '
-               '-f json'.format(vlan_value))
-        cmd_output = json.loads(self.openstack(cmd))
+        cmd_output = self._openstack_assert_equivalent([
+            'nuage gateway vport list -f json subnet_{}'
+            .format(vlan_value),
+            'nuage gateway vport list -f json {}'
+            .format(cmd_output_subnet['id'])])
 
         self._verify_expected_keys_for_list(cmd_output, self._vport_attr_map)
 
