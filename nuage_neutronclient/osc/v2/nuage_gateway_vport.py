@@ -142,7 +142,7 @@ class ListNuageGatewayVPort(command.Lister):
         parser = super(ListNuageGatewayVPort, self).get_parser(prog_name)
         parser.add_argument(
             'subnet', metavar='<subnet>',
-            help=_('ID of the openstack subnet'))
+            help=_('The openstack subnet (Name or ID)'))
         parser.add_argument(
             '--project', metavar='<nuage-project>',
             help=_('The owner project (Name or ID)'), default='')
