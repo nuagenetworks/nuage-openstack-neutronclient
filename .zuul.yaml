@@ -12,6 +12,8 @@
               - name: OpenStack/nuage-openstack-neutronclient
                 override-checkout: 6.0/rocky
               - opendev.org/openstack/neutron
+              - name: opendev.org/openstack/neutron-tempest-plugin
+                override-checkout: 0.9.0
               - opendev.org/openstack/python-openstackclient
               - opendev.org/openstack/placement
             vars:
@@ -50,3 +52,5 @@
         override-checkout: 6.0/rocky
       - name: OpenStack/nuage-openstack-neutronclient
         override-checkout: 6.0/rocky
+      - name: opendev.org/openstack/neutron-tempest-plugin
+        override-checkout: 0.9.0
