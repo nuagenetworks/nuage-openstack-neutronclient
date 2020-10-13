@@ -167,7 +167,7 @@ class ShowPort(port.ShowPort):
                 ports=[port.id], fields=['id', 'floating_ip_address'])
             port.nuage_floatingip = (fips['nuage_floatingips'][0]
                                      if fips['nuage_floatingips'] else None)
-        except neutron_exceptions.BadRequest:
+        except (neutron_exceptions.BadRequest, neutron_exceptions.NotFound):
             # TODO(glenn) Can we find better way to detect a port with no vport
             pass
 
