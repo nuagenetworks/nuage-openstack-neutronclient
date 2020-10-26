@@ -34,10 +34,10 @@ subnet_resource.vsd_managed = resource.Body('vsd_managed', type=bool)
 def nuage_get_attrs(client_manager, parsed_args, is_create=True):
     attrs = openstack_get_attrs(client_manager, parsed_args, is_create)
 
-    if (hasattr(parsed_args, "nuagenet")
-            and hasattr(parsed_args, "net_partition")
-            and parsed_args.nuagenet is not None
-            and parsed_args.net_partition is None):
+    if (hasattr(parsed_args, "nuagenet") and
+            hasattr(parsed_args, "net_partition") and
+            parsed_args.nuagenet is not None and
+            parsed_args.net_partition is None):
         msg = _("'nuagenet' and 'net_partition' parameters should both be "
                 "given for creating a vsd-managed subnet.")
         raise exceptions.CommandError(msg)

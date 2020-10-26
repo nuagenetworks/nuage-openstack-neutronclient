@@ -54,6 +54,7 @@ def nuage_fc():
         nuage_add_known_arguments
     neutron_flw_classifier.FlowClassifierCreate.args2body = nuage_args2body
 
+
 try:
     from networking_sfc._i18n import _
     from networking_sfc.cli import flow_classifier as neutron_flw_classifier

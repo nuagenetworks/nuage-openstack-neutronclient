@@ -93,5 +93,3 @@
     parent: nuage-neutronclient-functional-base
     branches: ^(?!(stable|5.4|6.0)/(pike|queens|rocky|stein|train)).*$
     nodeset: openstack-single-node-centos
-
-
