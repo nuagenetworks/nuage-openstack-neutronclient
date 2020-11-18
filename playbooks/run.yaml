@@ -1,6 +1,6 @@
 - hosts: localhost
   vars:
-    no_proxy: "{{ proxy_env['no_proxy'] }}"
+    no_proxy: "{{ proxy_env['no_proxy'] if proxy_env is defined else '' }}"
   tasks:
     - name: compute no_proxy
       block:
@@ -39,4 +39,4 @@
     - test-setup
     - ensure-tox
     - tox
-  environment: '{{ proxy_env|combine(env) }}'
+  environment: '{{ proxy_env | default({}) | combine(env) }}'
