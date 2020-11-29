@@ -1,16 +1,18 @@
 - hosts: localhost
-  vars:
-    no_proxy: "{{ proxy_env['no_proxy'] if proxy_env is defined else '' }}"
   tasks:
+    - name: Set no_proxy fact
+      set_fact:
+        no_proxy: "{{ proxy_env['no_proxy'] }}"
+      when: proxy_env is defined
+
     - name: compute no_proxy
       block:
       - set_fact:
           no_proxy: "{{ no_proxy }},{{ hostvars[item]['nodepool']['interface_ip'] }}"
-        when: hostvars[item]['nodepool']['interface_ip'] is defined
+        when:
+          - proxy_env is defined
+          - hostvars[item]['nodepool']['interface_ip'] is defined
         with_items: "{{ query('inventory_hostnames', 'all,!localhost') }}"
-    - name: register no_proxy
-      command: /bin/echo "{{ no_proxy }}"
-      register: no_proxy_var
 
 - hosts: controller
   tasks:
@@ -23,7 +25,7 @@
   vars:
     vsp: "{{ hostvars['controller']['vsp_info']['content'] | b64decode | from_yaml}}"
     env:
-      no_proxy: "{{ hostvars['localhost']['no_proxy_var'].stdout }},{{ vsp['vsd_server'].split(':')[0]}}"
+      no_proxy: "{{ vsp['vsd_server'].split(':')[0]}},{{ hostvars['localhost']['no_proxy'] | default('') }}"
     devstack_localrc:
       NUAGE_VSD_SERVERS: "{{ vsp['vsd_server'] }}"
       NUAGE_VSC_SERVER: "{{ vsp['vsc_controller'] }}"
