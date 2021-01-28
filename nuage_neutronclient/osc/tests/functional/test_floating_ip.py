@@ -13,7 +13,6 @@
 #    under the License.
 #
 import json
-import unittest
 
 import testtools
 
@@ -26,7 +25,6 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
 
     @classmethod
     def setUpClass(cls):
-        raise unittest.case.SkipTest('OPENSTACK-2857')
         super(NuageFloatingIPExtensionTests, cls).setUpClass()
 
         cls.random_name = utils.get_random_name()
@@ -44,9 +42,11 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
         # Public network
         cls.openstack('network create --external public-{}'
                       .format(cls.random_name))
-        cls.openstack((('subnet create --subnet-range 98.0.2.1/24 '
+        random_cidr = utils.get_random_ipv4_subnet_config()["cidr"]
+        cls.openstack((('subnet create --subnet-range {} '
                        '--network public-{} public-{}'
-                        .format(cls.random_name, cls.random_name))))
+                        .format(random_cidr, cls.random_name,
+                                cls.random_name))))
 
         # Router
         cls.openstack('router create {}'.format(cls.random_name))
@@ -63,8 +63,8 @@ class NuageFloatingIPExtensionTests(FloatingIpTests):
         # Router
         cls.openstack('router remove subnet {} {}'.format(cls.random_name,
                                                           cls.random_name))
-        cls.openstack(('router remove subnet {} public-{}'
-                       .format(cls.random_name, cls.random_name)))
+        cls.openstack(('router unset --external-gateway {}'
+                       .format(cls.random_name)))
 
         cls.openstack('router delete {}'.format(cls.random_name))
 
