@@ -57,9 +57,11 @@ class NuageRouterTests(RouterTests):
                          for k, v in items.items()))
 
     def _random_target(self):
-        # VSD-35089
         return '{}:{}'.format(random.randrange(10, 5000),
                               random.randrange(10, 5000))
+
+    def _random_vnid(self):
+        return random.randrange(12300000, 12345678)
 
     def test_nuage_options(self):
         # TODO(glenn) Test nuage-net-partition when the resource is implemented
@@ -70,7 +72,7 @@ class NuageRouterTests(RouterTests):
             'nuage_router_template': self._create_l3_domain_template().id,
             'nuage_rd': self._random_target(),
             'nuage_rt': self._random_target(),
-            'nuage_backhaul_vnid': 12345678,
+            'nuage_backhaul_vnid': self._random_vnid(),
             'nuage_backhaul_rd': self._random_target(),
             'nuage_backhaul_rt': self._random_target(),
             'nuage_tunnel_type': 'GRE',
@@ -106,7 +108,7 @@ class NuageRouterTests(RouterTests):
         args_for_set = {
             'nuage_rd': self._random_target(),
             'nuage_rt': self._random_target(),
-            'nuage_backhaul_vnid': 16777215,
+            'nuage_backhaul_vnid': self._random_vnid(),
             'nuage_backhaul_rd': self._random_target(),
             'nuage_backhaul_rt': self._random_target(),
             'nuage_tunnel_type': 'VXLAN',
