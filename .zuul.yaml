@@ -89,9 +89,13 @@
     nodeset: openstack-single-node-centos7
 
 - job:
-    name: nuage-neutronclient-functional
-    parent: nuage-neutronclient-functional-base
-    branches: ^(?!(stable|5.4|6.0)/(pike|queens|rocky|stein|train)).*$
-    nodeset: openstack-single-node-centos
+      name: nuage-neutronclient-functional
+      parent: nuage-neutronclient-functional-base
+      branches: ^stable/victoria$
+      nodeset: openstack-single-node-centos
 
-
+- job:
+      name: nuage-neutronclient-functional
+      parent: nuage-neutronclient-functional-base
+      branches: ^(?!(stable|5.4|6.0)/(pike|queens|rocky|stein|train|victoria)).*$
+      nodeset: openstack-single-node-centos-stream
