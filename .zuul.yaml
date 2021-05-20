@@ -54,6 +54,9 @@
         s-container: false
         s-object: false
         s-proxy: false
+        ovn-controller: false
+        ovn-northd: false
+        q-ovn-metadata-agent: false
       devstack_localrc:
         FORCE: 'yes'
         USE_PYTHON3: true
@@ -69,6 +72,8 @@
         Q_ML2_PLUGIN_EXT_DRIVERS: nuage_subnet,nuage_port,port_security,nuage_network
         Q_ML2_PLUGIN_TYPE_DRIVERS: vxlan,vlan,flat,nuage_hybrid_mpls
         Q_ML2_PLUGIN_MECHANISM_DRIVERS: nuage,nuage_baremetal,nuage_sriov,testsriov
+        Q_ML2_TENANT_NETWORK_TYPE: vxlan
+        Q_AGENT: nuage
         ML2_L3_PLUGIN: NuageL3
         PHYSICAL_NETWORK: physnet1,physnet2
         ML2_VLAN_RANGES: physnet1:100:300,physnet2:100:300
