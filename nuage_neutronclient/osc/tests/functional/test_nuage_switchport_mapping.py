@@ -245,6 +245,68 @@ class NuageSwitchPortTests(base.TestCase):
 
         self.delete_and_verify_switchport_mapping(cmd_output['id'])
 
+    def test_update_switchport_mapping_in_use(self):
+        # create a switchport binding
+        host_id = 'fake_host_id'
+        pci_slot = '0000:03:10.6'
+        vlan = 123
+        binding_profile = dict(pci_slot=pci_slot,
+                               physical_network='physnet1',
+                               pci_vendor_info='8086:10ed')
+
+        cmd_output = self.create_and_verify_switchport_mapping(
+            host_id=host_id, pci_slot=pci_slot, switch_id=self.system_id,
+            port_id=self.gw_port_phys_name, switch_info=self.name)
+
+        network_name = utils.get_random_name()
+        self.openstack('network create --mtu 1380 --provider-network-type vlan'
+                       ' --provider-physical-network physnet1'
+                       ' --provider-segment {vlan} {network}'
+                       .format(vlan=vlan, network=network_name))
+        self.addCleanup(self.openstack,
+                        'network delete {}'.format(network_name))
+
+        segment_name = utils.get_random_name()
+        self.openstack('network segment create --network-type vxlan '
+                       '--segment {vlan} --network {network} {segment}'
+                       .format(vlan=vlan, network=network_name,
+                               segment=segment_name))
+        self.addCleanup(self.openstack,
+                        'network segment delete {}'.format(segment_name))
+
+        subnet_name = utils.get_random_name()
+        self.openstack(('subnet create --network {network} --subnet-range '
+                        '10.0.0.1/24 {subnet}'.format(network=network_name,
+                                                      subnet=subnet_name)))
+        self.addCleanup(self.openstack,
+                        'subnet delete {}'.format(subnet_name))
+
+        port_name = utils.get_random_name()
+        port_cmd_output = json.loads(self.openstack(
+            ("port create -f json --network {network} --vnic-type direct "
+             "--binding-profile '{binding_profile}' --host {host} {port}"
+             .format(network=network_name,
+                     binding_profile=json.dumps(binding_profile),
+                     host=host_id,
+                     port=port_name))))
+        self.addCleanup(self.openstack,
+                        'port delete {}'.format(port_cmd_output['id']))
+        cmd = ('nuage switchport mapping set --switch-id {switch_id} '
+               '--switch-info {switch_info} --port-id {port_id} '
+               '--host-id {host_id} --pci-slot {pci_slot} {swp_mapping}'
+               .format(switch_id=self.system_id_for_update,
+                       port_id=self.gw_port_for_update_phys_name,
+                       switch_info=self.name, host_id=host_id,
+                       pci_slot=pci_slot, swp_mapping=cmd_output['id']))
+        self.assertRaisesRegex(
+            Exception, '.*in use.*', self.openstack, cmd)
+        args_for_update = dict(switch_id=self.system_id,
+                               port_id=self.gw_port_phys_name,
+                               switch_info=self.name_for_update,
+                               host_id='updated', pci_slot='0000:03:10.1')
+        self.update_and_verify_switchport_mapping(
+            cmd_output['id'], **args_for_update)
+
     def test_create_list_show_delete_switchport_mapping_with_bridge(self):
         kwargs = dict(host_id='fake_host_id', pci_slot='eth0',
                       switch_id=self.system_id, port_id=self.gw_port_phys_name,
