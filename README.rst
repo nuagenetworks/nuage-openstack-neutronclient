@@ -1,8 +1,7 @@
-=============================
-nuage-openstack-neutronclient
-=============================
+The master branch of this project is no longer maintained.
 
-Openstack Neutron Client extensions for Nuage Networks
-
-* Free software: Apache license
-* Source: http://github.com/nuagenetworks/nuage-openstack-neutronclient
+The contents of this repository are still available in the Git
+source code management system.  To see the contents of this
+repository before it reached its end of life, please check out the
+previous commit with "git checkout HEAD^1", or check out other
+branches.
