@@ -2,13 +2,101 @@
     check:
       jobs:
         - openstack-tox-pep8
-        - networking-nuage-tempest-cli
+        - networking-nuage-tempest-cli:
+            required-projects: &required-projects
+                - name: openstack/neutron-tempest-plugin
+                  override-checkout: 1.5.0
+
         - nuage-neutronclient-functional
     gate:
       jobs:
         - openstack-tox-pep8
-        - networking-nuage-tempest-cli
+        - networking-nuage-tempest-cli:
+            required-projects: *required-projects
         - nuage-neutronclient-functional
     periodic:
       jobs:
         - nuage-neutronclient-functional
+
+- job:
+    name: nuage-neutronclient-functional-base
+    abstract: true
+    parent: devstack-tox-functional
+    irrelevant-files:
+      - ^(test-|)requirements.txt$
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^releasenotes/.*$
+      - ^setup.cfg$
+      - ^tools/.*$
+      - ^tox.ini$
+    required-projects:
+      - OpenStack/networking-testsriov
+      - OpenStack/nuage-openstack-neutron
+      - OpenStack/nuage-openstack-neutronclient
+      - opendev.org/openstack/neutron
+      - opendev.org/openstack/python-openstackclient
+      - opendev.org/openstack/placement
+    pre-run: playbooks/pre.yaml
+    run: playbooks/run.yaml
+    vars:
+      nuage_fip_range: "{{ hostvars[inventory_hostname]['nodepool']['interface_ip'].split('.')  }}"
+      vsp_release: "{{ nuage_vsp_release }}"
+      tox_envlist: functional
+      devstack_source_dirs:
+        - src/opendev.org/openstack
+        - src/opendev.org/openstack-infra
+        - src/review.kong.an.nuagenetworks.net/OpenStack
+      devstack_services:
+        tls-proxy: false
+        q-svc: true
+        c-bak: false
+        etcd: false
+        q-agt: false
+        q-dhcp: false
+        q-l3: false
+        q-meta: false
+        q-metering: false
+        s-account: false
+        s-container-sync: false
+        s-container: false
+        s-object: false
+        s-proxy: false
+        ovn-controller: false
+        ovn-northd: false
+        q-ovn-metadata-agent: false
+      devstack_localrc:
+        FORCE: 'yes'
+        USE_PYTHON3: true
+        LIBS_FROM_GIT: python-openstackclient
+        LIBVIRT_TYPE: kvm
+        IMAGE_URLS: http://openstack-infra.an.nuagenetworks.net/nuage-glance-images/cirros-ipv6.qcow2
+        DEFAULT_IMAGE_FILE_NAME: cirros-ipv6.qcow2
+        DOWNLOAD_DEFAULT_IMAGES: False
+        FLOATING_RANGE: "10.{{ nuage_fip_range[2] | int + nuage_fip_range[1] | int }}.{{ nuage_fip_range[3] }}.0/24"
+        PUBLIC_NETWORK_GATEWAY: "10.{{ nuage_fip_range[2] | int + nuage_fip_range[1] | int }}.{{ nuage_fip_range[3] }}.1"
+        Q_PLUGIN: ml2
+        Q_USE_PROVIDERNET_FOR_PUBLIC: False
+        Q_ML2_PLUGIN_EXT_DRIVERS: nuage_subnet,nuage_port,port_security,nuage_network
+        Q_ML2_PLUGIN_TYPE_DRIVERS: vxlan,vlan,flat,nuage_hybrid_mpls
+        Q_ML2_PLUGIN_MECHANISM_DRIVERS: nuage,nuage_baremetal,nuage_sriov,testsriov
+        Q_ML2_TENANT_NETWORK_TYPE: vxlan
+        Q_AGENT: nuage
+        ML2_L3_PLUGIN: NuageL3
+        PHYSICAL_NETWORK: physnet1,physnet2
+        ML2_VLAN_RANGES: physnet1:100:300,physnet2:100:300
+        NUAGE_VSD_DEF_NETPART_NAME: "NuageCi-{{ 1000000 | random }}"
+        NUAGE_FIP_UNDERLAY: True
+        NUAGE_USE_METADATA: True
+        NUAGE_METADATA_SHARED_SECRET: sharedsecret
+        NUAGE_PAT: legacy_disabled
+        OVS_BRIDGE: alubr0
+      devstack_plugins:
+        nuage-openstack-neutron: https://github.com/nuagenetworks/nuage-openstack-neutron.git
+        nuage-openstack-neutronclient: https://github.com/nuagenetworks/nuage-openstack-neutronclient.git
+        networking-testsriov: https://github.com/nuagenetworks/networking-testsriov.git
+
+- job:
+      name: nuage-neutronclient-functional
+      parent: nuage-neutronclient-functional-base
+      nodeset: openstack-single-node-centos-stream
