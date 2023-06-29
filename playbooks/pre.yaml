@@ -1,0 +1,51 @@
+- hosts: localhost
+  roles:
+    - role: set-nuage-vsp-facts
+
+- hosts: all
+  vars:
+    devstack_base_dir: /opt/stack
+    nuage_source_dirs:
+      - src/review.kong.an.nuagenetworks.net/OpenStack
+  roles:
+    - vsp-info
+  tasks:
+    - name: Find all Fss source repos used by this job
+      find:
+        paths: "{{ nuage_source_dirs }}"
+        file_type: directory
+      register: found_repos
+
+    - name: Copy Zuul repos into devstack working directory
+      command: rsync -a {{ item.path }} {{ devstack_base_dir }}
+      with_items: '{{ found_repos.files }}'
+      become: yes
+
+    - name: Set ownership of repos
+      become: yes
+      file:
+        path: '{{ devstack_base_dir }}'
+        state: directory
+        recurse: true
+        owner: stack
+        group: stack
+
+    - name: Install python3 dev package
+      become: yes
+      when:
+        - ansible_os_family == "RedHat"
+      package:
+        name: python3-devel
+        state: present
+
+    - name: Patch upper-constraints.txt
+      become: yes
+      become_user: stack
+      when:
+        - ansible_os_family == "RedHat"
+        - ansible_distribution_major_version == '7'
+      lineinfile:
+        path: /opt/stack/requirements/upper-constraints.txt
+        regexp: '^cryptography='
+        line: cryptography===3.3.2
+
