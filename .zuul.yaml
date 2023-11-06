@@ -4,6 +4,12 @@
         - openstack-tox-pep8
         - networking-nuage-tempest-cli:
             required-projects: &required-projects
+                - name: opendev.org/openstack/neutron
+                  override-checkout: train-eol
+                - name: opendev.org/openstack/nova
+                  override-checkout: train-eol
+                - name: opendev.org/openstack/placement
+                  override-checkout: train-eol
                 - name: openstack/neutron-tempest-plugin
                   override-checkout: 1.5.0
 
@@ -34,9 +40,13 @@
       - OpenStack/networking-testsriov
       - OpenStack/nuage-openstack-neutron
       - OpenStack/nuage-openstack-neutronclient
-      - opendev.org/openstack/neutron
+      - name: opendev.org/openstack/neutron
+        override-checkout: train-eol
+      - name: opendev.org/openstack/nova
+        override-checkout: train-eol
       - opendev.org/openstack/python-openstackclient
-      - opendev.org/openstack/placement
+      - name: opendev.org/openstack/placement
+        override-checkout: train-eol
     pre-run: playbooks/pre.yaml
     run: playbooks/run.yaml
     vars:
