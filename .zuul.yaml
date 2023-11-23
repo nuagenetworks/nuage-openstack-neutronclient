@@ -14,9 +14,6 @@
         - networking-nuage-tempest-cli:
             required-projects: *required-projects
         - nuage-neutronclient-functional
-    periodic:
-      jobs:
-        - nuage-neutronclient-functional
 
 - job:
     name: nuage-neutronclient-functional-base
